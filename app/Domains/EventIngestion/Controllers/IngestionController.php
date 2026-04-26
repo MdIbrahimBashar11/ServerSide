@@ -29,7 +29,7 @@ class IngestionController extends Controller
                 $reqPerMin = $tenant->event_limit >= 100000 ? 10000 : 1000;
                 $throttleKey = 'ingest_throttle_' . $project->tracking_id;
                 
-                if (\Illuminate\Support\Facades\RateLimiter::tooManyRequests($throttleKey, $reqPerMin)) {
+                if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($throttleKey, $reqPerMin)) {
                     \Log::warning("Edge node rate limited connection for Project: {$project->id}");
                     return response()->json(['error' => 'Too Many Requests. Node throttled.'], 429);
                 }
