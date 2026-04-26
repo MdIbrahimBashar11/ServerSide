@@ -8,25 +8,39 @@ use Illuminate\Support\Facades\Http;
 
 class SSLProvisioningService
 {
+    public function __construct(protected NginxConfigService $nginxService) {}
+
     /**
      * Start the SSL provisioning process.
      */
     public function provision(Project $project): bool
     {
         $project->update(['ssl_status' => 'pending']);
+        $domain = $project->custom_domain;
 
         try {
-            // MOCK LOGIC FOR LOCAL DEVELOPMENT
-            // In production, you would run a shell command or call a Cloudflare/SaaS API here.
-            
-            // Example Production Command (commented out):
-            // $domain = $project->custom_domain;
-            // $command = "sudo certbot --nginx -d {$domain} --non-interactive --agree-tos --email admin@servertrack.io";
-            // exec($command, $output, $resultCode);
-            // if ($resultCode !== 0) throw new \Exception("Certbot Failed: " . implode("\n", $output));
+            // 1. Update Nginx Config with the new domain
+            if (!$this->nginxService->addDomain($domain)) {
+                throw new \Exception("Failed to update Nginx configuration locally.");
+            }
 
-            // Delay simulation
-            sleep(2);
+            // 2. Move temp config to Nginx and Reload (Requires sudo permissions)
+            $moveCommand = "sudo mv " . storage_path('app/nginx_tmp_config') . " /etc/nginx/sites-available/recordsync";
+            $reloadCommand = "sudo systemctl reload nginx";
+            
+            exec($moveCommand, $output, $res);
+            if ($res !== 0) throw new \Exception("Failed to move Nginx config. Check sudo permissions.");
+            
+            exec($reloadCommand, $output, $res);
+            if ($res !== 0) throw new \Exception("Nginx reload failed.");
+
+            // 3. Run Certbot for SSL
+            $certbotCommand = "sudo certbot --nginx -d {$domain} --non-interactive --agree-tos --register-unsafely-without-email";
+            exec($certbotCommand, $output, $res);
+            
+            if ($res !== 0) {
+                throw new \Exception("Certbot failed for domain {$domain}. Output: " . implode("\n", $output));
+            }
 
             $project->update([
                 'ssl_status' => 'active',
@@ -43,6 +57,10 @@ class SSLProvisioningService
                 'ssl_status' => 'failed',
                 'ssl_error_log' => $e->getMessage(),
             ]);
+
+            return false;
+        }
+    }
 
     /**
      * Check if a domain's SSL is still valid.

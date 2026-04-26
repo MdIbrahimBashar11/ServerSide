@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 class DNSVerificationService
 {
-    protected $targetDomain = 'sdk.core-relay.org';
+    protected $targetDomain = 'sdk.recordsync.cam';
 
     /**
      * Verify the CNAME of a custom domain.

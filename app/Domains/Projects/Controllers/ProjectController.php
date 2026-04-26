@@ -115,12 +115,14 @@ class ProjectController extends Controller
         $request->validate([
             'name' => 'required|string',
             'website_url' => 'required|url',
+            'custom_domain' => 'required|string|max:255|unique:projects,custom_domain,' . $project->id,
             'platform' => 'required|string'
         ]);
 
         $project->update([
             'name' => $request->name,
             'website_url' => $request->website_url,
+            'custom_domain' => str_replace(['http://', 'https://', '/'], '', $request->custom_domain),
             'platform' => $request->platform
         ]);
 

@@ -1,0 +1,57 @@
+আপনার লারাভেল ওয়েবসাইটে Custom Domain এর মাধ্যমে ট্র্যাকিং সেটআপ করার বিস্তারিত গাইড নিচে দেওয়া হলো। এটি করলে ট্র্যাকিং ডাটা সরাসরি আপনার ডোমেইন থেকে আসবে, যা অ্যাড-ব্লকার এড়াতে সাহায্য করে।
+
+ধাপ ১: DNS কনফিগারেশন (আপনার ডোমেইন প্যানেলে)
+প্রথমে আপনার ডোমেইন যেখান থেকে কেনা (যেমন: GoDaddy, Namecheap বা Cloudflare), সেখানে গিয়ে একটি CNAME রেকর্ড যোগ করতে হবে।
+
+Type: CNAME
+Host/Name: track (বা আপনার পছন্দের যেকোনো নাম, যেমন: analytics বা api)
+Value/Target: mysite.recordsync.cam (অর্থাৎ আপনার মেইন সার্ভারের ইউআরএল)
+TTL: Automatic বা 3600
+এর ফলে track.yourdomain.com এখন আপনার সার্ভারকে পয়েন্ট করবে।
+
+ধাপ ২: RecordSync প্যানেলে ডোমেইন যোগ করা
+১. আপনার RecordSync Dashboard-এ যান। ২. আপনার প্রোজেক্টটি ওপেন করে "Implementation Guide" বা "Setup" ট্যাবে যান। ৩. সেখানে "Custom Domain Setup" বক্সে আপনার তৈরি করা সাব-ডোমেইনটি লিখুন (যেমন: track.yourdomain.com)। ৪. "Connect Domain" বাটনে ক্লিক করুন। এটি আপনার ডোমেইনটি ভেরিফাই করবে এবং স্বয়ংক্রিয়ভাবে SSL (https) সেটআপ করার চেষ্টা করবে।
+
+ধাপ ৩: লারাভেল ওয়েবসাইটে কোড আপডেট করা
+আপনার লারাভেল ওয়েবসাইটে এখন সরাসরি মেইন সার্ভারের বদলে এই কাস্টম ডোমেইনটি ব্যবহার করবেন।
+
+উদাহরণস্বরূপ (JavaScript Code): আপনার ওয়েবসাইটের <head> ট্যাগে নিচের কোডটি ব্যবহার করুন:
+
+html
+<script>
+(function() {
+    // এখন আপনার মেইন সার্ভারের বদলে কাস্টম ডোমেইন ব্যবহার করুন
+    var trackingUrl = 'https://track.yourdomain.com/api/track-event'; 
+    fetch(trackingUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Tracking-Id': 'আপনার_ট্র্যাকিং_আইডি'
+        },
+        body: JSON.stringify({
+            event_name: 'PageView',
+            event_id: 'view_' + Date.now(),
+            user_data: {
+                page_url: window.location.href
+            }
+        })
+    });
+})();
+</script>
+ধাপ ৪: সার্ভার সাইড (Nginx) কনফিগারেশন
+আপনার লারাভেল সার্ভারে (যেখানে mysite.recordsync.cam হোস্ট করা), Nginx-কে বলতে হবে যেন সে এই নতুন ডোমেইনটির রিকোয়েস্টও গ্রহণ করে।
+
+আপনার Nginx কনফিগারেশন ফাইলে (/etc/nginx/sites-available/recordsync) server_name লাইনে আপনার ডোমেইনটি যোগ করতে হবে:
+
+nginx
+server {
+    listen 80;
+    server_name mysite.recordsync.cam track.yourdomain.com; # এখানে আপনার ডোমেইনটি যোগ করুন
+    ...
+}
+এরপর sudo nginx -t এবং sudo systemctl restart nginx দিন।
+
+এটি কিভাবে কাজ করে? (Technical Logic)
+আপনার লারাভেল অ্যাপ্লিকেশনে একটি Middleware (IdentifyProjectByDomain) আছে। যখন কোনো রিকোয়েস্ট track.yourdomain.com থেকে আসে, তখন লারাভেল ওই ডোমেইন নাম দেখে বুঝে নেয় এটি আপনার প্রোজেক্ট এবং অটোমেটিক ডাটা প্রসেস করে। এর ফলে আলাদা করে কোনো জটিল কনফিগারেশন করতে হয় না।
+
+সুবিধা: ব্রাউজারের অ্যাড-ব্লকারগুলো সাধারণত থার্ড-পার্টি ডোমেইন ব্লক করে, কিন্তু আপনার নিজের ডোমেইন (track.yourdomain.com) ব্লক করে না। ফলে আপনি ১০০% নিখুঁত ডাটা পাবেন।

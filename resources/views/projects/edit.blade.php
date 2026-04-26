@@ -36,6 +36,12 @@
                                 <label class="block text-sm font-bold text-gray-700 mb-2">Website URL</label>
                                 <input name="website_url" type="url" value="{{ $project->website_url }}" class="block w-full border-gray-300 rounded-xl py-3 px-4 text-gray-900 focus:ring-emerald-600 focus:border-emerald-600 transition font-bold" placeholder="https://www.example.com" required />
                             </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Tracking Subdomain</label>
+                                <input name="custom_domain" type="text" value="{{ $project->custom_domain }}" class="block w-full border-gray-300 rounded-xl py-3 px-4 text-gray-900 focus:ring-emerald-600 focus:border-emerald-600 transition font-bold" placeholder="track.example.com" required />
+                                <p class="text-[10px] text-gray-500 font-bold mt-2">Example: track.yourdomain.com (Do not include http/https)</p>
+                            </div>
                         </div>
                     </div>
 

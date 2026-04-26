@@ -37,8 +37,8 @@
                         <div>
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">CNAME Target (Point your DNS to this)</label>
                             <div class="flex items-center gap-4 bg-white p-5 rounded-xl border border-gray-200 shadow-sm group">
-                                <code class="flex-1 font-mono text-sm text-gray-900 tracking-wider">sdk.core-relay.org</code>
-                                <button onclick="navigator.clipboard.writeText('sdk.core-relay.org')" class="text-gray-400 hover:text-emerald-600 transition">
+                                <code class="flex-1 font-mono text-sm text-gray-900 tracking-wider">sdk.recordsync.cam</code>
+                                <button onclick="navigator.clipboard.writeText('sdk.recordsync.cam')" class="text-gray-400 hover:text-emerald-600 transition">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                 </button>
                             </div>
@@ -83,7 +83,7 @@
                                 <li class="flex items-start gap-3"><span class="text-emerald-600">02.</span> Navigate to DNS Management or Zone Settings.</li>
                                 <li class="flex items-start gap-3"><span class="text-emerald-600">03.</span> Add a new record: <span class="text-gray-900 font-bold">CNAME</span></li>
                                 <li class="flex items-start gap-3"><span class="text-emerald-600">04.</span> Host: Your subdomain prefix (e.g., 'track')</li>
-                                <li class="flex items-start gap-3"><span class="text-emerald-600">05.</span> Value/Target: <span class="text-gray-900 font-bold">sdk.core-relay.org</span></li>
+                                <li class="flex items-start gap-3"><span class="text-emerald-600">05.</span> Value/Target: <span class="text-gray-900 font-bold">sdk.recordsync.cam</span></li>
                                 <li class="flex items-start gap-3"><span class="text-emerald-600">06.</span> Save, wait for propagation, then click verify below.</li>
                             </ul>
                         </div>
