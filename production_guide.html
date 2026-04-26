@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServerTrack.io - প্রোডাকশন গাইড</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+        .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            overflow-x: auto;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .section-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-center text-indigo-600 mb-8">ServerTrack.io <br> <span class="text-2xl text-gray-600">পূর্ণাঙ্গ প্রোডাকশন ও ডিপ্লয়মেন্ট গাইড</span></h1>
+
+        <!-- 1. Workflow -->
+        <div class="section-box">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2">১. সিস্টেম ওয়ার্কফ্লো (System Workflow)</h2>
+            <p class="mb-4">ব্যবহারকারী কীভাবে সিস্টেমে কাজ করবে এবং ডাটা কীভাবে প্রসেস হবে তার ফ্লো নিচে বর্ণনা করা হলো:</p>
+            <ol class="list-decimal ml-6 space-y-2">
+                <li><strong>ওয়েবসাইট ভিজিট (Client Browser):</strong> একজন ভিজিটর যখন ই-কমার্স সাইটে ঢুকে পেজভিউ বা কেনাকাটা (Purchase) করে, তখন জাভাস্ক্রিপ্ট ট্রিগার হয়।</li>
+                <li><strong>ফার্স্ট-পার্টি ডোমেইন (CNAME Setup):</strong> ডাটা সরাসরি আপনার মূল ট্র্যাকিং সার্ভারে না গিয়ে ক্লায়েন্টের সাব-ডোমেইনে (যেমন: trk.client-store.com) যায়। এটি অ্যাডব্লকার (AdBlocker) এবং iOS ট্র্যাকিং রেস্ট্রিকশন বাইপাস করতে সাহায্য করে।</li>
+                <li><strong>লারাভেল API ইনেজেশন (Ingestion API):</strong> এনজিনিক্স (Nginx) এবং লারাভেল খুব দ্রুত ডাটা গ্রহণ করে। এখানে রেট লিমিট এবং API কী চেক করা হয়।</li>
+                <li><strong>কিউতে পাঠানো (Redis Queue):</strong> ডাটাগুলো সাথে সাথে ডাটাবেসে সেভ করে ব্যাকগ্রাউন্ড প্রসেসের জন্য Redis Queue তে পাঠানো হয় এবং ওয়েবসাইটকে ২00 OK রেসপন্স দিয়ে দেওয়া হয়।</li>
+                <li><strong>লারাভেল ওয়ার্কার (Laravel Workers):</strong> ব্যাকগ্রাউন্ডে সুপারভাইজার (Supervisor) চালিত ওয়ার্কারগুলো কিউ থেকে ডাটা বের করে আনে।</li>
+                <li><strong>এক্সটার্নাল API তে সেন্ড:</strong> ওয়ার্কারগুলো ডাটা গুলোকে ফেসবুক কনভার্সন API (Facebook CAPI) এবং গুগল অ্যানালিটিক্স ৪ (GA4) এ পাঠিয়ে দেয়।</li>
+                <li><strong>লগিং ও ড্যাশবোর্ড (Dashboard logs):</strong> সকল সাকসেস বা ফেইলর লগ আকারে সেভ হয়, যা ক্লায়েন্ট তার ড্যাশবোর্ডে দেখতে পারে।</li>
+            </ol>
+        </div>
+
+        <!-- 2. Advanced Features -->
+        <div class="section-box">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2">২. অ্যাডভান্সড ফিচারসমূহ (Advanced System Features)</h2>
+            
+            <h3 class="text-xl font-semibold mt-4">ইভেন্ট ডিডুপ্লিকেশন (Event Deduplication)</h3>
+            <p class="text-gray-700">যদি কোনো ইউজার থ্যাংক ইউ পেজ (Thank You Page) দুইবার রিলোড দেয়, তবে একই Purchase ইভেন্ট দুইবার যেতে পারে। এটি আটকাতে আমরা <code>event_id</code> ব্যবহার করেছি। লারাভেল API চেক করবে এই আইডিটি ইতিমধ্যে ডাটাবেসে আছে কিনা, থাকলে স্কিপ করবে। ফেইসবুকও এই <code>event_id</code> দিয়ে ডাবল ডাটা ফিল্টার করে নিবে।</p>
+
+            <h3 class="text-xl font-semibold mt-4">রেট লিমিটিং (Rate Limiting)</h3>
+            <p class="text-gray-700">ডিডিওএস (DDoS) বা ফেক ট্রাফিক আটকাতে লারাভেলের <code>throttle:300,1</code> মিডলওয়্যার ব্যবহার করা হয়েছে। অর্থাৎ, প্রতি মিনিটে কোনো ক্লায়েন্ট ৩০০ টির বেশি ইভেন্ট পাঠাতে পারবে না।</p>
+        </div>
+
+        <!-- 3. Deployment Guide -->
+        <div class="section-box">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2">৩. প্রোডাকশন ডিপ্লয়মেন্ট (Production Deployment - Ubuntu VPS)</h2>
+            
+            <p class="mb-2">DigitalOcean বা AWS এ Ubuntu 22.04 LTS সার্ভার ব্যবহার করুন।</p>
+            
+            <h3 class="font-bold mt-4">Nginx ও অন্যান্য প্যাকেজ ইনস্টল:</h3>
+            <div class="code-block">
+sudo apt update && sudo apt upgrade -y<br>
+sudo apt install nginx mysql-server redis-server supervisor php8.3-fpm php-mysql php-redis -y
+            </div>
+
+            <h3 class="font-bold mt-4">Nginx CNAME কনফিগারেশন:</h3>
+            <p class="text-sm text-gray-600 mb-2">আপনার ক্লায়েন্টদের কাস্টম ডোমেইন গুলো সাপোর্ট করার জন্য Wildcard কনফিগার করতে হবে।</p>
+            <div class="code-block">
+server {<br>
+&nbsp;&nbsp;listen 80;<br>
+&nbsp;&nbsp;server_name tracking-saas.com *.tracking-saas.com;<br>
+&nbsp;&nbsp;root /var/www/tracking-saas/public;<br>
+&nbsp;&nbsp;index index.php;<br>
+<br>
+&nbsp;&nbsp;location / {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;try_files $uri $uri/ /index.php?$query_string;<br>
+&nbsp;&nbsp;}<br>
+}
+            </div>
+
+            <h3 class="font-bold mt-4">Supervisor কিউ (Queue) সেটআপ:</h3>
+            <p class="text-sm text-gray-600 mb-2">ব্যাকগ্রাউন্ডে ইভেন্ট সেন্ড করার জন্য ওয়ার্কার চালু রাখতে হবে। নিচের কোডটি <code>/etc/supervisor/conf.d/tracking.conf</code> এ লিখুন:</p>
+            <div class="code-block">
+[program:tracking-worker]<br>
+process_name=%(program_name)s_%(process_num)02d<br>
+command=php /var/www/tracking-saas/artisan queue:work redis --sleep=3 --tries=3<br>
+autostart=true<br>
+autorestart=true<br>
+user=www-data<br>
+numprocs=8 # ৮টি প্যারালাল ওয়ার্কার
+            </div>
+            <p class="mt-2 text-sm text-gray-600">তারপর রান করুন: <code>sudo supervisorctl update</code></p>
+        </div>
+
+        <!-- 4. Scaling -->
+        <div class="section-box">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2">৪. সিস্টেম স্কেলিং - ১০০০+ ক্লায়েন্ট (Scaling Strategy)</h2>
+            <ul class="list-disc ml-6 space-y-2">
+                <li><strong>MySQL এর বদলে ClickHouse:</strong> যখন দিনে ১০ মিলিয়নের বেশি ইভেন্ট আসবে, তখন MySQL ধীর গতির হয়ে যাবে। তখন <code>events</code> টেবিলের জন্য 'ClickHouse' ডাটাবেস ব্যবহার করতে হবে।</li>
+                <li><strong>Laravel Octane:</strong> লারাভেলকে মেমোরিতে ধরে রেখে প্রতি সেকেন্ডে ৩০০০+ রিকোয়েস্ট প্রসেস করতে FrankenPHP বা Swoole চালিত Octane ব্যবহার করুন।</li>
+                <li><strong>আলাদা Redis সার্ভার:</strong> মূল সার্ভারের চাপ কমাতে Redis এর জন্য AWS ElastiCache বা আলাদা ছোট VPS সার্ভার নিন।</li>
+            </ul>
+        </div>
+
+        <!-- 5. Monetization -->
+        <div class="section-box">
+            <h2 class="text-2xl font-bold mb-4 border-b pb-2">৫. সাবস্ক্রিপশন ও ব্যবসা (Monetization System)</h2>
+            <p>আপনার SaaS প্ল্যাটফর্ম থেকে আয় করার জন্য <strong>মিটারড বিলিং (Metered Billing)</strong> ব্যবহার করতে পারেন।</p>
+            <ul class="list-disc ml-6 mt-2">
+                <li><strong>ফ্রি প্ল্যান (Free Tier):</strong> মাসে ১০,০০০ টি ইভেন্ট ফ্রি।</li>
+                <li><strong>পেইড প্ল্যান (Paid Tier):</strong> মাসে ১ লাখ ইভেন্টের জন্য স্টার্টার প্যাক ২০ ডলার।</li>
+            </ul>
+            <p class="mt-4 text-gray-700">Redis এ কাউন্টার ব্যবহার করে খুব সহজেই ক্লায়েন্টের মাসিক ইভেন্ট ট্র্যাক করতে পারবেন। লিমিট পার হলে সিস্টেম আটোমেটিকভাবে ইভেন্ট সেন্ড করা বন্ধ করে ক্লায়েন্টকে পেমেন্ট করতে বলবে।</p>
+        </div>
+
+        <div class="text-center text-gray-500 mt-8">
+            <p>&copy; 2026 ServerTrack SaaS Planning</p>
+        </div>
+    </div>
+
+</body>
+</html>

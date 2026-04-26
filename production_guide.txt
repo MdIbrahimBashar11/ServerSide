@@ -1,0 +1,122 @@
+ServerTrack.io - Full Production & Deployment Guide
+===================================================
+
+This guide provides a comprehensive overview of the ServerTrack.io tracking system, its workflow, advanced features, and deployment steps for a production environment.
+
+1. System Workflow
+------------------
+1. Client Browser Visit:
+   When a visitor enters an e-commerce site, the tracking JavaScript triggers on events like PageView or Purchase.
+
+2. First-Party Tracking (CNAME Setup):
+   Data is sent to a client sub-domain (e.g., trk.client-store.com) instead of the main tracking server. This bypasses AdBlockers and iOS tracking restrictions.
+
+3. Laravel API Ingestion:
+   Nginx and Laravel receive the data via the `/api/track-event` endpoint. The system verifies the API key and project settings.
+
+4. Redis Queueing:
+   Incoming events are stored in the database and immediately pushed to a Redis Queue (ProcessEventJob) for background processing. The client receives a fast 200 OK response.
+
+5. Background Workers (Supervisor):
+   Supervisor-managed Laravel workers pull events from the queue and process them.
+
+6. External API Dispatch:
+   Workers send data to integrated platforms like Facebook Conversion API (CAPI), Google Analytics 4 (GA4), and custom Webhooks.
+
+7. Logging & Analytics:
+   Success and failure logs are recorded, enabling clients to monitor their event flow via the dashboard.
+
+
+2. Advanced System Features
+---------------------------
+- Event Deduplication:
+  Prevents duplicate data if a user reloads a "Thank You" page. Each event uses a unique 'event_id'. If the ID already exists in the database, the system skips it.
+
+- Rate Limiting:
+  Protects against DDoS and fake traffic.
+  - Global API Throttling: 300 requests per minute per IP (via middleware).
+  - Dynamic Tenant Throttling: High-tier clients get up to 10k req/min, others 1k req/min (handled at the controller level).
+
+- Usage Enforcement:
+  Automatically pauses ingestion if a client exceeds their monthly event limit (e.g., Free Tier: 10,000 events/month).
+
+
+3. Production Deployment (Ubuntu VPS)
+-------------------------------------
+Recommended OS: Ubuntu 24.04 LTS or 22.04 LTS.
+
+A. Required Packages:
+   sudo apt update && sudo apt upgrade -y
+   sudo apt install nginx mysql-server redis-server supervisor php8.3-fpm php-mysql php-redis -y
+
+B. Nginx Wildcard Configuration:
+   To support custom tracking domains for multiple clients, use a wildcard server_name.
+   
+   server {
+       listen 80;
+       server_name tracking-saas.com *.tracking-saas.com;
+       root /var/www/tracking-saas/public;
+       index index.php;
+
+       location / {
+           try_files $uri $uri/ /index.php?$query_string;
+       }
+
+       location ~ \.php$ {
+           include snippets/fastcgi-php.conf;
+           fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+       }
+   }
+
+C. .env Optimization:
+   Ensure the following are set for production:
+   APP_ENV=production
+   APP_DEBUG=false
+   QUEUE_CONNECTION=redis  # Critical for performance
+   SESSION_DRIVER=redis or database
+   CACHE_STORE=redis
+
+D. Supervisor Worker Setup:
+   Create /etc/supervisor/conf.d/tracking.conf:
+   
+   [program:tracking-worker]
+   process_name=%(program_name)s_%(process_num)02d
+   command=php /var/www/tracking-saas/artisan queue:work redis --sleep=3 --tries=5 --backoff=10,30,60,300
+   autostart=true
+   autorestart=true
+   user=www-data
+   numprocs=8
+   redirect_stderr=true
+   stdout_logfile=/var/www/tracking-saas/storage/logs/worker.log
+
+   Update and start:
+   sudo supervisorctl reread
+   sudo supervisorctl update
+   sudo supervisorctl start all
+
+
+4. Scaling Strategy
+-------------------
+- Database Scaling:
+  When exceeding 10M events per day, migrate the 'events' table to ClickHouse for ultra-fast analytical queries.
+  
+- Performance Boost:
+  Use Laravel Octane (FrankenPHP or Swoole) to handle 3,000+ requests per second by keeping the application in memory.
+
+- Infrastructure:
+  Separate the Redis server and MySQL server into dedicated instances (e.g., AWS ElastiCache for Redis) to reduce resource contention on the primary API nodes.
+
+
+5. Monetization & Billing
+-------------------------
+- Metered Billing:
+  Track event counts in Redis or Database.
+  - Free Tier: 10k events/month.
+  - Starter: 100k events/month ($20/mo).
+  - Pro/Scale: Metered pricing ($0.10 per additional 1k events).
+
+- Automated Enforcement:
+  The system checks 'event_limit' during every ingestion. If reached, it returns a 402 Payment Required response.
+
+---
+© 2026 ServerTrack SaaS Production Guide

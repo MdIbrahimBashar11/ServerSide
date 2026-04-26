@@ -1,0 +1,230 @@
+# 🚀 RecordSync Production Setup (Beginner Friendly)
+
+এই গাইডটি একদম beginner-friendly ভাবে লেখা হয়েছে, যাতে আপনি step-by-step follow করে আপনার Laravel + FreeRADIUS server safely run করতে পারেন।
+
+---
+
+## 🔹 Step 1: সার্ভারে লগইন করা
+
+টার্মিনাল ওপেন করে নিচের কমান্ড দিন:
+
+```bash
+ssh root@YOUR_SERVER_IP
+```
+
+---
+
+## 🔹 Step 2: প্রয়োজনীয় সফটওয়্যার ইনস্টল
+
+```bash
+sudo apt update
+sudo apt install nginx mysql-server redis-server supervisor php8.3-fpm php-mysql php-redis unzip git -y
+```
+
+✅ Note:
+
+* FreeRADIUS → UDP 1812/1813
+* Nginx → TCP 80/443
+* কোনো conflict হবে না
+
+---
+
+## 🔹 Step 3: প্রোজেক্ট ফোল্ডার তৈরি
+
+```bash
+sudo mkdir -p /var/www/recordsync
+cd /var/www/
+```
+
+---
+
+## 🔹 Step 4: প্রোজেক্ট আপলোড
+
+### Option A: Git দিয়ে
+
+```bash
+sudo git clone YOUR_GIT_REPO recordsync
+```
+
+### Option B: FileZilla দিয়ে
+
+* Host: Server IP
+* Port: 22
+* Username: root
+
+📂 Upload path:
+
+```
+/var/www/recordsync
+```
+
+---
+
+## 🔹 Step 5: Permission সেট করা
+
+```bash
+sudo chown -R www-data:www-data /var/www/recordsync
+sudo find /var/www/recordsync -type f -exec chmod 644 {} \;
+sudo find /var/www/recordsync -type d -exec chmod 755 {} \;
+sudo chmod -R 775 /var/www/recordsync/storage
+sudo chmod -R 775 /var/www/recordsync/bootstrap/cache
+```
+
+---
+
+## 🔹 Step 6: Database Setup
+
+```bash
+sudo mysql -u root -p
+```
+
+MySQL এ ঢুকে:
+
+```sql
+CREATE DATABASE recordsync_db;
+CREATE USER 'recordsync_user'@'localhost' IDENTIFIED BY 'strong_password';
+GRANT ALL PRIVILEGES ON recordsync_db.* TO 'recordsync_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+---
+
+## 🔹 Step 7: .env Setup
+
+```bash
+cd /var/www/recordsync
+cp .env.example .env
+nano .env
+```
+
+Update করুন:
+
+```
+APP_URL=http://mysite.recordsync.cam
+APP_ENV=production
+APP_DEBUG=false
+
+DB_DATABASE=recordsync_db
+DB_USERNAME=recordsync_user
+DB_PASSWORD=strong_password
+
+QUEUE_CONNECTION=redis
+CACHE_STORE=redis
+SESSION_DRIVER=redis
+```
+
+---
+
+## 🔹 Step 8: Laravel Setup
+
+```bash
+cd /var/www/recordsync
+composer install
+php artisan key:generate
+php artisan migrate --force
+php artisan storage:link
+```
+
+---
+
+## 🔹 Step 9: Nginx Configuration
+
+ফাইল তৈরি করুন:
+
+```bash
+sudo nano /etc/nginx/sites-available/recordsync
+```
+
+এটা paste করুন:
+
+```nginx
+server {
+    listen 80;
+    server_name mysite.recordsync.cam *.mysite.recordsync.cam;
+
+    root /var/www/recordsync/public;
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+    }
+}
+```
+
+Save করে বের হন:
+
+```
+CTRL + X → Y → Enter
+```
+
+Enable করুন:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/recordsync /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+---
+
+## 🔹 Step 10: Queue Worker Setup (Supervisor)
+
+```bash
+sudo nano /etc/supervisor/conf.d/recordsync.conf
+```
+
+Paste করুন:
+
+```
+[program:recordsync-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/recordsync/artisan queue:work redis --sleep=3 --tries=5
+autostart=true
+autorestart=true
+user=www-data
+numprocs=4
+stdout_logfile=/var/www/recordsync/storage/logs/worker.log
+```
+
+তারপর রান করুন:
+
+```bash
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start all
+```
+
+---
+
+## 🔹 Step 11: Final Check
+
+Browser এ ওপেন করুন:
+
+```
+http://mysite.recordsync.cam
+```
+
+---
+
+## ⚠️ Important Notes
+
+* FreeRADIUS এর ডাটাবেস আলাদা রাখুন
+* MySQL (3306), Redis (6379) free আছে কিনা check করুন
+* Firewall থাকলে port 80 allow করুন
+
+---
+
+## ✅ Done!
+
+আপনার Laravel + FreeRADIUS server এখন safely run করবে 🎉
+
+---
+
+**RecordSync Team**
+Powered by Se

@@ -1,0 +1,20 @@
+### Phase 3: Total Automation & Production Scaling
+These prompts address the final bottlenecks for launching the platform to hundreds of tenants simultaneously, specifically focusing on the 'Magic' experience of one-click SSLs and zero-latency monitoring.
+
+----------------------------------------------------------------------
+
+**PROMPT 12: Automated SSL Provisioning & Edge Certificate Orchestration**
+"You are a DevOps and Security Engineer. We need to deliver the 'Auto-SSL' promise without manual intervention.
+1. Build a `ProvisionSSLJob` that is dispatched as soon as a domain hits 'verified' status.
+2. Implement a service that communicates with a Cloud Platform (like Cloudflare for SaaS, DigitalOcean, or a local acme.sh script) to provision and attach a Let's Encrypt SSL certificate to the tenant's custom domain.
+3. Update the `setup.blade.php` UI to show a pulsing 'Provisioning SSL...' state and a final 'SSL Active' badge once the certificate is detected.
+4. Add a global check to ensure all tracking endpoints (`/track-event`) are strictly enforced over HTTPS for verified domains."
+
+----------------------------------------------------------------------
+
+**PROMPT 13: Proactive Connectivity Guard & Tenant Health Monitor**
+"You are a Senior SaaS Operations Lead. System reliability is paramount. 
+1. Create a scheduled Artisan Command `monitor:connectivity` that runs every 6-12 hours.
+2. The command must re-verify the CNAME and SSL validity for all `verified` projects to catch DNS accidents or expiration.
+3. If a domain fails verification, update its status to `connection_lost` and dispatch a high-priority 'DNS Failure' notification to the tenant via Email and Dashboard alert.
+4. Build a small 'Infrastructure Health' widget on the main Project Dashboard showing the average response time of the edge node and the current connectivity status of their custom domain."
