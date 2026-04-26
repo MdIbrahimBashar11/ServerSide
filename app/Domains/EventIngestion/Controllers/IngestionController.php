@@ -36,7 +36,7 @@ class IngestionController extends Controller
                 \Illuminate\Support\Facades\RateLimiter::hit($throttleKey, 60);
 
                 // Target Pausing Enforcement
-                $usage = App\Domains\Projects\Models\Event::whereIn('project_id', $tenant->projects()->pluck('id'))->count();
+                $usage = Event::whereIn('project_id', $tenant->projects()->pluck('id'))->count();
                 if ($usage >= $tenant->event_limit) {
                     return response()->json(['error' => 'Monthly billing limit exceeded. Data ingestion paused.'], 402);
                 }
