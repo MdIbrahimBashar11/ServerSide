@@ -10,7 +10,7 @@ class Event extends Model
 {
     use HasUuids, HasFactory;
 
-    protected $fillable = ['project_id', 'event_name', 'event_time', 'user_data', 'custom_data', 'source'];
+    protected $fillable = ['project_id', 'event_id', 'user_id', 'event_name', 'event_time', 'user_data', 'custom_data', 'source'];
 
     protected $casts = [
         'user_data' => 'array',
