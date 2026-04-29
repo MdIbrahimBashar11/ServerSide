@@ -87,18 +87,30 @@ class FacebookService
             'event_time' => $event->event_time ? $event->event_time->timestamp : time(),
             'event_id' => $event->event_id, // Mandatory Deduplication ID
             'action_source' => 'website',
-            'event_source_url' => $userData['page_url'] ?? null, // CRITICAL: Added this
+            'event_source_url' => $userData['page_url'] ?? null,
             'user_data' => $hashedUserData,
-            'custom_data' => []
+            'custom_data' => $this->formatCustomData($customData)
         ];
 
-        // Specific rules for Purchase events
-        if (strtolower($event->event_name) === 'purchase') {
-            $formatted['custom_data']['value'] = $customData['value'] ?? 0;
-            $formatted['custom_data']['currency'] = $customData['currency'] ?? 'USD';
-        }
-
         return $formatted;
+    }
+
+    protected function formatCustomData(array $customData)
+    {
+        $formatted = [];
+        
+        // Standard E-commerce parameters
+        if (isset($customData['value'])) $formatted['value'] = (float) $customData['value'];
+        if (isset($customData['currency'])) $formatted['currency'] = strtoupper($customData['currency']);
+        if (isset($customData['content_ids'])) $formatted['content_ids'] = (array) $customData['content_ids'];
+        if (isset($customData['content_name'])) $formatted['content_name'] = $customData['content_name'];
+        if (isset($customData['content_type'])) $formatted['content_type'] = $customData['content_type'];
+        if (isset($customData['content_category'])) $formatted['content_category'] = $customData['content_category'];
+        if (isset($customData['num_items'])) $formatted['num_items'] = (int) $customData['num_items'];
+        if (isset($customData['search_string'])) $formatted['search_string'] = $customData['search_string'];
+
+        // Pass through any other custom data
+        return array_merge($customData, $formatted);
     }
 
     protected function mapEventName($name)
@@ -108,7 +120,19 @@ class FacebookService
             'AddToCart' => 'AddToCart',
             'Purchase' => 'Purchase',
             'Lead' => 'Lead',
-            'ViewContent' => 'ViewContent'
+            'ViewContent' => 'ViewContent',
+            'InitiateCheckout' => 'InitiateCheckout',
+            'AddToWishlist' => 'AddToWishlist',
+            'CompleteRegistration' => 'CompleteRegistration',
+            'Contact' => 'Contact',
+            'CustomizeProduct' => 'CustomizeProduct',
+            'Donate' => 'Donate',
+            'FindLocation' => 'FindLocation',
+            'Schedule' => 'Schedule',
+            'Search' => 'Search',
+            'StartTrial' => 'StartTrial',
+            'SubmitApplication' => 'SubmitApplication',
+            'Subscribe' => 'Subscribe'
         ];
         return $map[$name] ?? $name;
     }
