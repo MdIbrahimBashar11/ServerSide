@@ -12,8 +12,6 @@ class FacebookService
 {
     public function sendEvent(Event $event, Destination $destination)
     {
-        Log::info("Attempting to send FB CAPI event: {$event->event_name}", ['event_id' => $event->event_id]);
-
         $pixelId = $destination->dataset_id;
         $accessToken = $destination->access_token;
         $url = "https://graph.facebook.com/v19.0/{$pixelId}/events";
@@ -31,17 +29,21 @@ class FacebookService
             $payload['test_event_code'] = $event->custom_data['test_event_code'];
         }
 
+        // FULL LOGGING for debugging
+        Log::info("Sending FB CAPI Event: {$event->event_name}", [
+            'pixel_id' => $pixelId,
+            'payload' => $payload
+        ]);
+
         // Send Request to Facebook CAPI
         try {
             $response = Http::withToken($accessToken)->post($url, $payload);
             
-            // Log full response for debugging
-            Log::info("FB CAPI Response for {$event->event_name}", [
+            Log::info("FB CAPI Response", [
                 'status' => $response->status(),
                 'body' => $response->json()
             ]);
 
-            // Handle error logging and response capture
             $this->logDelivery($event, $destination, $response, $payload);
 
             return $response;
