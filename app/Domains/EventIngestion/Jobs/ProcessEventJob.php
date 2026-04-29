@@ -29,6 +29,7 @@ class ProcessEventJob implements ShouldQueue
     public function handle(): void
     {
         $destinations = $this->event->project?->destinations()->where('is_active', true)->get() ?? collect();
+        $errors = [];
 
         foreach ($destinations as $destination) {
             try {
@@ -42,10 +43,14 @@ class ProcessEventJob implements ShouldQueue
                     app(\App\Domains\EventForwarding\Platforms\Webhook\WebhookService::class)->sendEvent($this->event, $destination);
                 }
             } catch (\Exception $e) {
-                \Log::error("Job Failed for destination {$destination->platform}: " . $e->getMessage());
-                // Rethrow so Laravel's Queue worker registers it as a failure and retries up to 3 times
-                throw $e; 
+                \Log::error("Event Forwarding Failed for {$destination->platform}: " . $e->getMessage());
+                $errors[] = $destination->platform . ": " . $e->getMessage();
             }
+        }
+
+        // If there were any errors, we still want the job to be marked as failed for retries
+        if (!empty($errors)) {
+            throw new \Exception("Forwarding failed for some destinations: " . implode(', ', $errors));
         }
     }
 }
