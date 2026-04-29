@@ -14,4 +14,14 @@ class EventDeliveryLog extends Model
     protected $casts = [
         'request_payload' => 'array',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    public function destination()
+    {
+        return $this->belongsTo(Destination::class);
+    }
 }
