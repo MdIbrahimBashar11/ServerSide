@@ -58,8 +58,19 @@ class IngestionController extends Controller
         }
 
         $userData = $validated['user_data'] ?? [];
+        
+        // Robust IP detection
+        $ip = $request->header('X-Forwarded-For') 
+              ?? $request->header('X-Real-IP') 
+              ?? $request->ip();
+        
         if (empty($userData['client_ip_address'])) {
-            $userData['client_ip_address'] = $request->ip();
+            $userData['client_ip_address'] = $ip;
+        }
+
+        // Add client_user_agent if missing
+        if (empty($userData['client_user_agent'])) {
+            $userData['client_user_agent'] = $request->userAgent();
         }
 
         // 4. Store raw event in database
