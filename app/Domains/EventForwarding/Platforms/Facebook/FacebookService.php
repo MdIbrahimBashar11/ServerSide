@@ -10,28 +10,45 @@ use Illuminate\Support\Facades\Log;
 
 class FacebookService
 {
-    /**
-     * Send event to Facebook Conversion API
-     */
     public function sendEvent(Event $event, Destination $destination)
     {
+        Log::info("Attempting to send FB CAPI event: {$event->event_name}", ['event_id' => $event->event_id]);
+
         $pixelId = $destination->dataset_id;
         $accessToken = $destination->access_token;
         $url = "https://graph.facebook.com/v19.0/{$pixelId}/events";
 
+        $formattedEvent = $this->formatEvent($event);
+        
         $payload = [
             'data' => [
-                $this->formatEvent($event)
+                $formattedEvent
             ]
         ];
 
+        // Support for Facebook Test Event Code (CRITICAL for testing in Events Manager)
+        if (!empty($event->custom_data['test_event_code'])) {
+            $payload['test_event_code'] = $event->custom_data['test_event_code'];
+        }
+
         // Send Request to Facebook CAPI
-        $response = Http::withToken($accessToken)->post($url, $payload);
+        try {
+            $response = Http::withToken($accessToken)->post($url, $payload);
+            
+            // Log full response for debugging
+            Log::info("FB CAPI Response for {$event->event_name}", [
+                'status' => $response->status(),
+                'body' => $response->json()
+            ]);
 
-        // Handle error logging and response capture
-        $this->logDelivery($event, $destination, $response, $payload);
+            // Handle error logging and response capture
+            $this->logDelivery($event, $destination, $response, $payload);
 
-        return $response;
+            return $response;
+        } catch (\Exception $e) {
+            Log::error("FB CAPI Request Exception: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     protected function formatEvent(Event $event)
@@ -59,7 +76,7 @@ class FacebookService
         if (!empty($userData['fbc'])) { $hashedUserData['fbc'] = $userData['fbc']; }
 
         $formatted = [
-            'event_name' => strtolower($event->event_name) === 'purchase' ? 'Purchase' : $event->event_name,
+            'event_name' => $this->mapEventName($event->event_name),
             'event_time' => $event->event_time ? $event->event_time->timestamp : time(),
             'event_id' => $event->event_id, // Mandatory Deduplication ID
             'action_source' => 'website',
@@ -76,13 +93,21 @@ class FacebookService
         return $formatted;
     }
 
+    protected function mapEventName($name)
+    {
+        $map = [
+            'PageView' => 'PageView',
+            'AddToCart' => 'AddToCart',
+            'Purchase' => 'Purchase',
+            'Lead' => 'Lead',
+            'ViewContent' => 'ViewContent'
+        ];
+        return $map[$name] ?? $name;
+    }
+
     protected function logDelivery(Event $event, Destination $destination, $response, $payload)
     {
         $status = $response->successful() ? 'success' : 'failed';
-
-        if ($status === 'failed') {
-            Log::error("Facebook CAPI Error for Event {$event->event_id}", ['response' => $response->json()]);
-        }
 
         EventDeliveryLog::create([
             'event_id' => $event->id,
@@ -95,7 +120,7 @@ class FacebookService
         
         // Trigger Laravel automatic retry for Server Errors (Rate limits etc)
         if ($status === 'failed' && $response->serverError()) {
-            throw new \Exception("Facebook API Server Error"); 
+            throw new \Exception("Facebook API Server Error: " . $response->body()); 
         }
     }
 }
