@@ -57,13 +57,18 @@ class IngestionController extends Controller
             return response()->json(['status' => 'duplicate', 'message' => 'Event already exists'], 200);
         }
 
+        $userData = $validated['user_data'] ?? [];
+        if (empty($userData['client_ip_address'])) {
+            $userData['client_ip_address'] = $request->ip();
+        }
+
         // 4. Store raw event in database
         $event = Event::create([
             'project_id' => $project?->id,
             'event_id' => $validated['event_id'],
             'event_name' => $validated['event_name'],
             'user_id' => $validated['user_id'] ?? null,
-            'user_data' => $validated['user_data'] ?? [],
+            'user_data' => $userData,
             'custom_data' => $validated['custom_data'] ?? [],
             'event_time' => isset($validated['timestamp']) ? date('Y-m-d H:i:s', $validated['timestamp']) : now(),
         ]);
