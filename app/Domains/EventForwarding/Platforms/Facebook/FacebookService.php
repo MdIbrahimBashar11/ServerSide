@@ -77,11 +77,17 @@ class FacebookService
         if (!empty($userData['fbp'])) { $hashedUserData['fbp'] = $userData['fbp']; }
         if (!empty($userData['fbc'])) { $hashedUserData['fbc'] = $userData['fbc']; }
 
+        // External ID for better matching
+        if (!empty($event->user_id)) {
+            $hashedUserData['external_id'] = hash('sha256', $event->user_id);
+        }
+
         $formatted = [
             'event_name' => $this->mapEventName($event->event_name),
             'event_time' => $event->event_time ? $event->event_time->timestamp : time(),
             'event_id' => $event->event_id, // Mandatory Deduplication ID
             'action_source' => 'website',
+            'event_source_url' => $userData['page_url'] ?? null, // CRITICAL: Added this
             'user_data' => $hashedUserData,
             'custom_data' => []
         ];
