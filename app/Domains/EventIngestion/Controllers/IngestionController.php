@@ -57,21 +57,18 @@ class IngestionController extends Controller
             return response()->json(['status' => 'duplicate', 'message' => 'Event already exists'], 200);
         }
 
-        $userData = $validated['user_data'] ?? [];
+        // Capture all user data and inject server-side info
+        $userData = $request->input('user_data', []);
+        if (!is_array($userData)) $userData = [];
         
         // Robust IP detection
         $ip = $request->header('X-Forwarded-For') 
               ?? $request->header('X-Real-IP') 
               ?? $request->ip();
         
-        if (empty($userData['client_ip_address'])) {
-            $userData['client_ip_address'] = $ip;
-        }
-
-        // Add client_user_agent if missing
-        if (empty($userData['client_user_agent'])) {
-            $userData['client_user_agent'] = $request->userAgent();
-        }
+        $userData['client_ip_address'] = $userData['client_ip_address'] ?? $ip;
+        $userData['client_user_agent'] = $userData['client_user_agent'] ?? $request->userAgent();
+        $userData['page_url'] = $userData['page_url'] ?? $request->header('referer');
 
         // 4. Store raw event in database
         $event = Event::create([
