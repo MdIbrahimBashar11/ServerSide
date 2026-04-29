@@ -147,4 +147,41 @@ class ProjectController extends Controller
 
         return back()->with('error', 'Verification failed. Please ensure your CNAME record is correctly configured.');
     }
+    public function updateDestinations(Request $request, Project $project)
+    {
+        if ($project->user_id !== auth()->id()) abort(403);
+
+        $request->validate([
+            'fb_pixel_id' => 'nullable|string|max:255',
+            'fb_access_token' => 'nullable|string|max:1024',
+            'tt_pixel_id' => 'nullable|string|max:255',
+            'tt_access_token' => 'nullable|string|max:1024',
+        ]);
+
+        // Update Facebook CAPI
+        if ($request->filled('fb_pixel_id') || $request->filled('fb_access_token')) {
+            $project->destinations()->updateOrCreate(
+                ['platform' => 'fb_capi'],
+                [
+                    'dataset_id' => $request->fb_pixel_id,
+                    'access_token' => $request->fb_access_token,
+                    'is_active' => true
+                ]
+            );
+        }
+
+        // Update TikTok API
+        if ($request->filled('tt_pixel_id') || $request->filled('tt_access_token')) {
+            $project->destinations()->updateOrCreate(
+                ['platform' => 'tiktok'],
+                [
+                    'dataset_id' => $request->tt_pixel_id,
+                    'access_token' => $request->tt_access_token,
+                    'is_active' => true
+                ]
+            );
+        }
+
+        return back()->with('status', 'API Destinations updated successfully.');
+    }
 }

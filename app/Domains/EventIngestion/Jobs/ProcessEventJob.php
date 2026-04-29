@@ -36,6 +36,8 @@ class ProcessEventJob implements ShouldQueue
                     app(\App\Domains\EventForwarding\Platforms\Facebook\FacebookService::class)->sendEvent($this->event, $destination);
                 } elseif ($destination->platform === 'ga4') {
                     app(\App\Domains\EventForwarding\Platforms\GA4\GA4Service::class)->sendEvent($this->event, $destination);
+                } elseif ($destination->platform === 'tiktok') {
+                    app(\App\Domains\EventForwarding\Platforms\TikTok\TikTokService::class)->sendEvent($this->event, $destination);
                 } elseif ($destination->platform === 'webhook') {
                     app(\App\Domains\EventForwarding\Platforms\Webhook\WebhookService::class)->sendEvent($this->event, $destination);
                 }

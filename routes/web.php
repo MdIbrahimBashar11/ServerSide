@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/projects/{project}/config', [ProjectController::class, 'update'])->name('projects.update');
     Route::get('/projects/{project}/setup', [ProjectController::class, 'setup'])->name('projects.setup');
     Route::post('/projects/{project}/verify-domain', [ProjectController::class, 'verifyDomain'])->name('projects.verify_domain');
+    Route::post('/projects/{project}/destinations', [ProjectController::class, 'updateDestinations'])->name('projects.destinations.update');
     Route::get('/projects/{project}/events/{event}/logs', [ProjectController::class, 'deliveryLogs'])->name('projects.event.logs');
 
     // Primary Payment Gateway

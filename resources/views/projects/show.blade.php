@@ -47,12 +47,18 @@
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Primary Workflow</p>
                             <p class="text-sm font-bold text-gray-900 uppercase tracking-tight">{{ $project->platform ?? 'Native Integration' }}</p>
                         </div>
-                        <div class="p-6 rounded-xl border {{ $project->domain_status === 'verified' ? 'bg-emerald-50/50 border-emerald-100' : 'bg-red-50 border-red-100' }}">
-                            <p class="text-[10px] font-bold {{ $project->domain_status === 'verified' ? 'text-emerald-600' : 'text-red-600' }} uppercase tracking-widest mb-2">Live Status</p>
+                        <div class="p-6 rounded-xl border {{ $project->domain_status === 'verified' ? 'bg-emerald-50/50 border-emerald-100' : ($project->domain_status === 'pending' ? 'bg-amber-50/50 border-amber-100' : 'bg-red-50 border-red-100') }}">
+                            <p class="text-[10px] font-bold {{ $project->domain_status === 'verified' ? 'text-emerald-600' : ($project->domain_status === 'pending' ? 'text-amber-600' : 'text-red-600') }} uppercase tracking-widest mb-2">Live Status</p>
                             <div class="flex items-center gap-2">
-                                <span class="w-2 h-2 {{ $project->domain_status === 'verified' ? 'bg-emerald-500' : 'bg-red-500' }} rounded-full animate-pulse shadow-sm"></span>
-                                <p class="text-sm font-bold {{ $project->domain_status === 'verified' ? 'text-emerald-800' : 'text-red-800' }}">
-                                    {{ $project->domain_status === 'verified' ? 'Operational & Syncing' : 'Connection Lost' }}
+                                <span class="w-2 h-2 {{ $project->domain_status === 'verified' ? 'bg-emerald-500' : ($project->domain_status === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-red-500') }} rounded-full shadow-sm"></span>
+                                <p class="text-sm font-bold {{ $project->domain_status === 'verified' ? 'text-emerald-800' : ($project->domain_status === 'pending' ? 'text-amber-800' : 'text-red-800') }}">
+                                    @if($project->domain_status === 'verified')
+                                        Operational & Syncing
+                                    @elseif($project->domain_status === 'pending')
+                                        Verification Pending
+                                    @else
+                                        Connection Lost / Failed
+                                    @endif
                                 </p>
                             </div>
                         </div>

@@ -78,7 +78,13 @@
                     </div>
                 </form>
 
-                <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm space-y-10">
+                @php
+                    $fbDestination = $project->destinations()->where('platform', 'fb_capi')->first();
+                    $ttDestination = $project->destinations()->where('platform', 'tiktok')->first();
+                @endphp
+
+                <form action="{{ route('projects.destinations.update', $project->id) }}" method="POST" class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm space-y-10">
+                    @csrf
                     <div>
                         <h3 class="text-lg font-bold text-gray-900 mb-6 border-l-4 border-blue-600 pl-4 uppercase tracking-widest text-xs">API Destinations</h3>
                         <p class="text-sm text-gray-600 mb-10">Configure where your event data should be routed after it reaches our server.</p>
@@ -94,11 +100,11 @@
                             <div class="space-y-6">
                                 <div>
                                     <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Pixel ID</label>
-                                    <input type="text" class="w-full border-gray-300 rounded-lg text-sm font-bold py-3 px-4 focus:ring-blue-600 focus:border-blue-600 transition" placeholder="1029384..." />
+                                    <input name="fb_pixel_id" type="text" value="{{ $fbDestination?->dataset_id }}" class="w-full border-gray-300 rounded-lg text-sm font-bold py-3 px-4 focus:ring-blue-600 focus:border-blue-600 transition" placeholder="1029384..." />
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Access Token</label>
-                                    <input type="password" class="w-full border-gray-300 rounded-lg text-sm font-bold py-3 px-4 focus:ring-blue-600 focus:border-blue-600 transition" placeholder="••••••••" />
+                                    <input name="fb_access_token" type="password" value="{{ $fbDestination?->access_token }}" class="w-full border-gray-300 rounded-lg text-sm font-bold py-3 px-4 focus:ring-blue-600 focus:border-blue-600 transition" placeholder="••••••••" />
                                 </div>
                             </div>
                         </div>
@@ -112,22 +118,22 @@
                             <div class="space-y-6">
                                 <div>
                                     <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Pixel ID</label>
-                                    <input type="text" class="w-full border-gray-300 rounded-lg text-sm font-bold py-3 px-4 focus:ring-gray-900 focus:border-gray-900 transition" placeholder="CEJ..." />
+                                    <input name="tt_pixel_id" type="text" value="{{ $ttDestination?->dataset_id }}" class="w-full border-gray-300 rounded-lg text-sm font-bold py-3 px-4 focus:ring-gray-900 focus:border-gray-900 transition" placeholder="CEJ..." />
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Access Token</label>
-                                    <input type="password" class="w-full border-gray-300 rounded-lg text-sm font-bold py-3 px-4 focus:ring-gray-900 focus:border-gray-900 transition" placeholder="••••••••" />
+                                    <input name="tt_access_token" type="password" value="{{ $ttDestination?->access_token }}" class="w-full border-gray-300 rounded-lg text-sm font-bold py-3 px-4 focus:ring-gray-900 focus:border-gray-900 transition" placeholder="••••••••" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="mt-8 flex justify-end">
-                        <button class="bg-gray-900 hover:bg-black text-white px-8 py-3 rounded-xl text-sm font-bold shadow-md transition-all active:scale-95">
+                        <button type="submit" class="bg-gray-900 hover:bg-black text-white px-8 py-3 rounded-xl text-sm font-bold shadow-md transition-all active:scale-95">
                             Update Destinations
                         </button>
                     </div>
-                </div>
+                </form>
 
             </div>
 
