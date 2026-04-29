@@ -184,4 +184,15 @@ class ProjectController extends Controller
 
         return back()->with('status', 'API Destinations updated successfully.');
     }
+
+    public function deliveryLogs(Project $project)
+    {
+        if ($project->user_id !== auth()->id()) abort(403);
+
+        $logs = \App\Domains\Projects\Models\EventDeliveryLog::whereHas('event', function($query) use ($project) {
+            $query->where('project_id', $project->id);
+        })->with(['event', 'destination'])->latest()->limit(50)->get();
+
+        return response()->json($logs);
+    }
 }
