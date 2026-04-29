@@ -44,13 +44,13 @@ class ProcessEventJob implements ShouldQueue
                 }
             } catch (\Exception $e) {
                 \Log::error("Event Forwarding Failed for {$destination->platform}: " . $e->getMessage());
-                $errors[] = $destination->platform . ": " . $e->getMessage();
+                $failures[] = $destination->platform . ": " . $e->getMessage();
             }
         }
 
         // If there were any errors, we still want the job to be marked as failed for retries
-        if (!empty($errors)) {
-            throw new \Exception("Forwarding failed for some destinations: " . implode(', ', $errors));
+        if (!empty($failures)) {
+            Log::warning("Event Forwarding partially failed for some destinations: " . implode(', ', $failures));
         }
     }
 }
