@@ -114,42 +114,114 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- NEW: Infrastructure Health Widget -->
-                <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm relative overflow-hidden">
-                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-8 border-l-4 border-emerald-500 pl-4">Edge Infrastructure Health</h3>
-                    
-                    <div class="space-y-6">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Connectivity</span>
-                            @if($project->domain_status === 'verified')
-                                <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Strong
-                                </span>
-                            @else
-                                <span class="text-[10px] font-bold text-red-600 uppercase tracking-widest flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Action Required
-                                </span>
-                            @endif
-                        </div>
-                        
-                        <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Global Latency</span>
-                            <span class="text-[10px] font-bold text-gray-900 uppercase tracking-widest">34ms (Average)</span>
-                        </div>
 
-                        <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">SSL Status</span>
-                            <span class="text-[10px] font-bold uppercase tracking-widest {{ $project->ssl_status === 'active' ? 'text-emerald-600' : 'text-gray-500' }}">
-                                {{ strtoupper($project->ssl_status ?? 'NOT FOUND') }}
-                            </span>
+        <!-- Analytics Overview Section -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-6 md:p-8 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-900 tracking-tight">Analytics Overview</h3>
+                <select class="text-xs font-bold text-gray-500 border-gray-200 rounded-lg bg-gray-50 px-3 py-2 outline-none focus:ring-emerald-500 transition">
+                    <option>Last 7 Days</option>
+                    <option>Last 30 Days</option>
+                    <option>Today</option>
+                </select>
+            </div>
+            
+            <div class="p-6 md:p-8">
+                <!-- Stats Cards Row -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
+                    <div class="bg-gray-50 p-5 rounded-xl border border-gray-100">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Total Events</p>
+                        <p class="text-2xl font-black text-gray-900 leading-none">{{ number_format($totalEvents) }}</p>
+                    </div>
+                    <div class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100">
+                        <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-2">Successful</p>
+                        <p class="text-2xl font-black text-emerald-600 leading-none">0</p>
+                    </div>
+                    <div class="bg-red-50/50 p-5 rounded-xl border border-red-100">
+                        <p class="text-[10px] font-bold text-red-600 uppercase tracking-widest mb-2">Failed</p>
+                        <p class="text-2xl font-black text-red-600 leading-none">0</p>
+                    </div>
+                    <div class="bg-amber-50/50 p-5 rounded-xl border border-amber-100">
+                        <p class="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-2">Pending</p>
+                        <p class="text-2xl font-black text-amber-600 leading-none">0</p>
+                    </div>
+                    <div class="bg-gray-50 p-5 rounded-xl border border-gray-100">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Blocked</p>
+                        <p class="text-2xl font-black text-gray-900 leading-none">0</p>
+                    </div>
+                    <div class="bg-purple-50/50 p-5 rounded-xl border border-purple-100 relative overflow-hidden">
+                        <span class="absolute top-2 right-2 text-[8px] font-bold bg-white px-1.5 py-0.5 rounded-full shadow-sm text-purple-600 uppercase">New</span>
+                        <p class="text-[10px] font-bold text-purple-600 uppercase tracking-widest mb-2">Duplicated</p>
+                        <p class="text-2xl font-black text-purple-600 leading-none">0</p>
+                    </div>
+                </div>
+
+                <!-- Main Chart Area -->
+                <div class="h-[300px] w-full bg-gray-50/50 rounded-2xl border border-dashed border-gray-200 flex items-center justify-center relative overflow-hidden group">
+                    <div class="absolute inset-0 flex flex-col items-center justify-center opacity-30 group-hover:opacity-100 transition-opacity">
+                        <div class="flex items-end gap-1 mb-4 h-20">
+                            <div class="w-2 bg-emerald-500 rounded-t-sm h-8"></div>
+                            <div class="w-2 bg-emerald-500 rounded-t-sm h-12"></div>
+                            <div class="w-2 bg-emerald-500 rounded-t-sm h-16"></div>
+                            <div class="w-2 bg-emerald-500 rounded-t-sm h-10"></div>
+                            <div class="w-2 bg-emerald-500 rounded-t-sm h-14"></div>
+                            <div class="w-2 bg-emerald-500 rounded-t-sm h-20"></div>
+                            <div class="w-2 bg-emerald-500 rounded-t-sm h-12"></div>
                         </div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">Temporal Node Distribution Chart</p>
+                    </div>
+                    <!-- Legend mockup from screenshot -->
+                    <div class="absolute top-4 right-4 flex items-center gap-4">
+                        <div class="flex items-center gap-2"><span class="w-3 h-1 bg-emerald-500 rounded-full"></span> <span class="text-[9px] font-bold text-gray-500 uppercase">Successful</span></div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-1 bg-purple-500 rounded-full"></span> <span class="text-[9px] font-bold text-gray-500 uppercase">Blocked</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Analytics Section -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-6 md:p-8 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 tracking-tight">Performance Analytics</h3>
+                    <p class="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-widest">Real-time health monitoring for your event clusters.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <select class="text-xs font-bold text-gray-500 border-gray-200 rounded-lg bg-gray-50 px-3 py-2 outline-none focus:ring-emerald-500 transition">
+                        <option>Last 7 Days</option>
+                    </select>
+                    <button class="px-5 py-2.5 bg-gray-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-black transition">All Events</button>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <!-- Event Specific Card -->
+                    <div class="bg-[#d1e9e0]/40 rounded-xl border border-[#d1e9e0] p-6">
+                        <div class="flex items-center gap-2 mb-4">
+                             <div class="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
+                             <span class="text-[10px] font-bold text-gray-900 uppercase tracking-widest">PAGEVIEW</span>
+                        </div>
+                        <p class="text-3xl font-black text-gray-900">0</p>
                     </div>
 
-                    <div class="mt-8 pt-6 border-t border-gray-50">
-                         <div class="flex items-center gap-3">
-                             <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Last Checked: {{ $project->last_check_at ? $project->last_check_at->diffForHumans() : 'Never' }}</p>
+                    <!-- Performance Chart Mockup -->
+                    <div class="lg:col-span-4 bg-gray-50/30 rounded-2xl border border-gray-100 h-[300px] flex items-center justify-center">
+                         <div class="w-full h-full p-6 flex flex-col justify-between">
+                             <div class="flex-1 border-b border-gray-100 flex items-end gap-1 px-4">
+                                  <template x-for="i in 30">
+                                      <div class="flex-1 bg-emerald-200 rounded-t-sm" :style="'height: ' + Math.floor(Math.random() * 80) + '%'"></div>
+                                  </template>
+                             </div>
+                             <div class="pt-4 flex justify-between text-[8px] font-bold text-gray-300 uppercase tracking-widest">
+                                 <span>Apr 23</span>
+                                 <span>Apr 25</span>
+                                 <span>Apr 27</span>
+                                 <span>Apr 30</span>
+                             </div>
                          </div>
                     </div>
                 </div>
@@ -168,180 +240,5 @@
 
     </div>
 
-    <!-- Live Debugger Modal -->
-    <x-modal name="event-debugger" maxWidth="7xl">
-        <div class="p-0 bg-white h-[85vh] flex flex-col overflow-hidden" 
-             x-data="{ 
-                selectedEvent: null, 
-                logs: [], 
-                loading: false,
-                fetchLogs(eventData) {
-                    this.selectedEvent = eventData;
-                    this.loading = true;
-                    fetch('/projects/{{ $project->id }}/events/' + eventData.id + '/logs')
-                        .then(r => r.json())
-                        .then(data => { 
-                            this.logs = data; 
-                            this.loading = false; 
-                        });
-                }
-             }">
-            
-            <!-- Modal Header -->
-            <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-white z-20">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-600/20">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-900 leading-none">Debugger Tools</h2>
-                        <p class="text-[10px] font-bold text-gray-400 mt-2 uppercase tracking-widest">Live event tracking — Only shows events captured by node</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-6">
-                    <div class="flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-100">
-                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                        <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-widest">Active</span>
-                    </div>
-                    <button @click="$dispatch('close')" class="p-2 text-gray-400 hover:text-gray-900 transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Modal Content (Split Pane) -->
-            <div class="flex-1 flex overflow-hidden">
-                
-                <!-- Left Pane: Event List -->
-                <div class="w-1/3 border-r border-gray-100 flex flex-col bg-gray-50/50">
-                    <div class="p-6 border-b border-gray-100 bg-white">
-                        <div class="flex justify-between items-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                            <span>Events Pool</span>
-                            <span>{{ $events->count() }} detected</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex-1 overflow-y-auto custom-scrollbar">
-                        @forelse($events as $event)
-                            <button @click="fetchLogs({{ json_encode($event) }})" 
-                                    class="w-full p-6 text-left border-b border-gray-100 hover:bg-white transition-all group relative overflow-hidden"
-                                    :class="selectedEvent && selectedEvent.id == {{ $event->id }} ? 'bg-white shadow-sm z-10' : ''">
-                                <div x-show="selectedEvent && selectedEvent.id == {{ $event->id }}" class="absolute inset-y-0 left-0 w-1 bg-emerald-600"></div>
-                                
-                                <div class="flex justify-between items-start mb-3">
-                                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{{ $event->event_time->format('H:i:s') }}</span>
-                                    <span class="text-[8px] font-bold px-2 py-0.5 rounded-full {{ $event->platform === 'fb_capi' ? 'bg-blue-50 text-blue-600' : 'bg-gray-200 text-gray-700' }} uppercase tracking-tighter">{{ $event->platform }}</span>
-                                </div>
-                                <h4 class="text-sm font-bold text-gray-900 truncate uppercase tracking-tight group-hover:text-emerald-600 transition-colors">{{ $event->event_name }}</h4>
-                                <p class="text-[10px] text-gray-400 font-bold mt-2 uppercase tracking-widest">{{ $event->user_data['client_ip_address'] ?? 'N/A' }}</p>
-                            </button>
-                        @empty
-                            <div class="py-24 text-center">
-                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest italic px-8">Waiting for events to hit core infrastructure...</p>
-                            </div>
-                        @endforelse
-                    </div>
-
-                    @if($events->hasPages())
-                        <div class="p-4 border-t border-gray-100 bg-white px-6">
-                            {{ $events->links('pagination::simple-tailwind') }}
-                        </div>
-                    @endif
-                </div>
-
-                <!-- Right Pane: Details Inspector -->
-                <div class="flex-1 flex flex-col bg-white">
-                    
-                    <!-- Detail Header -->
-                    <div class="p-8 border-b border-gray-50">
-                        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Event Details</h3>
-                        <p class="text-xs text-gray-500 font-bold" x-show="!selectedEvent">Select an event from the pool to audit its transmission logs.</p>
-                        <p class="text-xl font-bold text-gray-900" x-show="selectedEvent" x-text="selectedEvent.event_name + ' Payload'"></p>
-                    </div>
-
-                    <!-- Inspector Body -->
-                    <div class="flex-1 overflow-y-auto bg-white p-0">
-                        
-                        <!-- Empty State -->
-                        <div x-show="!selectedEvent" class="h-full flex flex-col items-center justify-center p-12 text-center opacity-30 grayscale grayscale-0">
-                             <div class="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 mb-6">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                             </div>
-                             <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Select node event to begin audit</p>
-                        </div>
-
-                        <!-- Data Viewer -->
-                        <div x-show="selectedEvent" class="p-8 space-y-10" x-cloak>
-                            
-                            <!-- Inbound Payload -->
-                            <div class="space-y-4">
-                                <h5 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Inbound Tracking Data</h5>
-                                <div class="bg-gray-950 rounded-xl p-8 overflow-auto max-h-[300px] shadow-2xl relative group">
-                                    <button @click="navigator.clipboard.writeText(JSON.stringify(selectedEvent, null, 2))" class="absolute top-4 right-4 text-gray-500 hover:text-white transition opacity-0 group-hover:opacity-100 uppercase text-[9px] font-bold">Copy JSON</button>
-                                    <pre class="text-emerald-400 font-mono text-[11px] leading-relaxed"><code x-text="JSON.stringify(selectedEvent, null, 2)"></code></pre>
-                                </div>
-                            </div>
-
-                            <!-- Platform Responses -->
-                            <div class="space-y-6">
-                                <h5 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sync Transmission Logs</h5>
-                                
-                                <div x-show="loading" class="py-12 text-center">
-                                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-600 border-t-transparent mb-4"></div>
-                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Handshaking with destinations...</p>
-                                </div>
-
-                                <div x-show="!loading" class="space-y-4">
-                                    <template x-for="log in logs" :key="log.id">
-                                        <div class="border border-gray-100 rounded-xl overflow-hidden group">
-                                            <div class="px-6 py-4 bg-gray-50 flex justify-between items-center border-b border-gray-100">
-                                                <div class="flex items-center gap-3">
-                                                    <span class="text-[10px] font-bold text-gray-900 uppercase tracking-widest" x-text="log.destination.platform"></span>
-                                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-white border border-gray-100 text-gray-400" x-text="log.response_code"></span>
-                                                </div>
-                                                <span class="text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full" 
-                                                      :class="log.status === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-red-50 text-red-600 border border-red-100'"
-                                                      x-text="log.status === 'success' ? 'Synchronized' : 'Rejected'"></span>
-                                            </div>
-                                            <div class="p-6 bg-gray-50/20">
-                                                <div class="bg-gray-900 p-6 rounded-xl overflow-auto max-h-40 font-mono text-[10px] text-emerald-400 leading-relaxed shadow-inner">
-                                                    <pre x-text="log.response_body"></pre>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <div x-show="logs.length === 0" class="py-12 border-2 border-dashed border-gray-100 rounded-xl text-center">
-                                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">No outbound logs detected for this cycle</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-    </x-modal>
-
-    <!-- Scripts -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if page should open modal immediately (if filtered)
-            @if(request('start_date') || request('platform'))
-                setTimeout(() => {
-                    window.dispatchEvent(new CustomEvent('open-modal', { detail: 'event-debugger' }));
-                }, 100);
-            @endif
-        });
-    </script>
-    <style>
-        [x-cloak] { display: none !important; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
-    </style>
+    <!-- Modal is now centrally handled -->
 </x-app-layout>

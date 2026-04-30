@@ -34,6 +34,9 @@
             <a href="{{ route('projects.show', $project->id) }}" class="px-6 py-2.5 rounded-lg text-xs font-bold transition {{ request()->routeIs('projects.show') ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900' }}">
                 Analytics
             </a>
+            <a href="{{ route('projects.events', $project->id) }}" class="px-6 py-2.5 rounded-lg text-xs font-bold transition {{ request()->routeIs('projects.events') ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900' }}">
+                Events
+            </a>
             <a href="{{ route('projects.edit', $project->id) }}" class="px-6 py-2.5 rounded-lg text-xs font-bold transition {{ request()->routeIs('projects.edit') ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900' }}">
                 Configuration
             </a>
@@ -54,3 +57,5 @@
         </a>
     </div>
 </div>
+
+@include('projects._debugger_modal')

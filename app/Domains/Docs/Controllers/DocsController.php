@@ -25,11 +25,13 @@ class DocsController extends Controller
         $navigation = [
             'Getting Started' => [
                 'introduction' => 'Introduction',
+                'setup' => 'Setup & Benefits',
                 'installation' => 'Installation Guide',
             ],
             'Integrations' => [
                 'facebook-capi' => 'Facebook Conversion API',
                 'ga4-mp' => 'Google Analytics 4 MP',
+                'tiktok' => 'TikTok Events API',
             ]
         ];
 

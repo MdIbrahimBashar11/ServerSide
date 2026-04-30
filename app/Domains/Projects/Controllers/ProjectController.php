@@ -47,7 +47,7 @@ class ProjectController extends Controller
             $query->where('platform', $request->platform);
         }
 
-        $events = $query->paginate(30)->withQueryString();
+        $events = $query->limit(10)->get();
 
         return view('projects.show', compact('project', 'totalEvents', 'events'));
     }
@@ -105,7 +105,8 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         if($project->user_id !== auth()->id()) abort(403);
-        return view('projects.edit', compact('project'));
+        $events = \App\Domains\Projects\Models\Event::where('project_id', $project->id)->orderBy('event_time', 'desc')->limit(10)->get();
+        return view('projects.edit', compact('project', 'events'));
     }
 
     public function update(Request $request, Project $project)
@@ -132,7 +133,8 @@ class ProjectController extends Controller
     public function setup(Project $project)
     {
         if($project->user_id !== auth()->id()) abort(403);
-        return view('projects.setup', compact('project'));
+        $events = \App\Domains\Projects\Models\Event::where('project_id', $project->id)->orderBy('event_time', 'desc')->limit(10)->get();
+        return view('projects.setup', compact('project', 'events'));
     }
 
     public function verifyDomain(Project $project, \App\Domains\Projects\Services\DNSVerificationService $dnsService)
@@ -185,7 +187,14 @@ class ProjectController extends Controller
         return back()->with('status', 'API Destinations updated successfully.');
     }
 
-    public function deliveryLogs(Project $project)
+    public function events(Project $project)
+    {
+        if($project->user_id !== auth()->id()) abort(403);
+        $events = Event::where('project_id', $project->id)->orderBy('event_time', 'desc')->paginate(50);
+        return view('projects.events', compact('project', 'events'));
+    }
+
+    public function deliveryLogs(Project $project, Event $event)
     {
         if ($project->user_id !== auth()->id()) abort(403);
 

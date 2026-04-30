@@ -1,50 +1,8 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Eventrix — Professional Server-Side Tracking</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&family=Outfit:wght@400..900&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif !important; 
-            background-color: #ffffff !important;
-            color: #111827;
-        }
-        .font-outfit { font-family: 'Outfit', sans-serif; }
-    </style>
-</head>
-<body class="antialiased selection:bg-emerald-100 selection:text-emerald-900 overflow-x-hidden">
+@extends('layouts.landing')
 
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-600/20">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                </div>
-                <span class="text-xl font-bold text-gray-900 tracking-tight">Eventrix</span>
-            </a>
-            
-            <div class="hidden md:flex items-center gap-8 text-sm font-bold text-gray-600">
-                <a href="#features" class="hover:text-emerald-600 transition">Features</a>
-                <a href="#pricing" class="hover:text-emerald-600 transition">Pricing</a>
-                <a href="{{ route('login') }}" class="hover:text-emerald-600 transition">Login</a>
-            </div>
+@section('title', 'Eventrix — Professional Server-Side Tracking')
 
-            <div class="flex items-center gap-4">
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="px-6 py-2.5 rounded-lg bg-gray-900 text-white font-bold text-sm hover:bg-black transition">Dashboard</a>
-                @else
-                    <a href="{{ route('register') }}" class="px-6 py-2.5 rounded-lg bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition">Get Started</a>
-                @endauth
-            </div>
-        </div>
-    </nav>
-
+@section('content')
     <!-- Hero Section -->
     <section class="pt-40 pb-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-6 text-center">
@@ -147,19 +105,4 @@
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="py-12 border-t border-gray-100 bg-white">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
-            <div class="flex items-center gap-2">
-                <div class="w-6 h-6 bg-emerald-600 rounded flex items-center justify-center">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                </div>
-                <span class="text-lg font-bold text-gray-900 tracking-tight">Eventrix</span>
-            </div>
-            <p class="text-gray-400 text-sm font-medium">&copy; 2024 Eventrix Tracking Solutions. All rights reserved.</p>
-        </div>
-    </footer>
-
-</body>
-</html>
+@endsection

@@ -20,7 +20,15 @@
             [x-cloak] { display: none !important; }
             body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fafafe; }
             .auth-card { 
-                max-width: {{ $maxWidth === 'max-w-4xl' ? '900px' : ($maxWidth === 'max-w-2xl' ? '672px' : '480px') }}; 
+                max-width: {{ 
+                    match($maxWidth ?? 'max-w-md') {
+                        'max-w-7xl' => '1280px',
+                        'max-w-5xl' => '1024px',
+                        'max-w-4xl' => '896px',
+                        'max-w-2xl' => '672px',
+                        default => '480px',
+                    }
+                }}; 
                 width: 95%;
             }
         </style>
