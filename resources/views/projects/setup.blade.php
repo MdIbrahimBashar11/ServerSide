@@ -150,6 +150,47 @@ Http::post('{{ $trackingUrl }}', [
                             </div>
                         </div>
 
+                        <!-- WordPress -->
+                        <div x-show="tab === 'wordpress'" x-transition style="display: none;" class="space-y-6">
+                            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-10 shadow-sm relative">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                                    <div>
+                                        <h3 class="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+                                            <svg class="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.224 21.059c-2.317.075-4.475-.769-6.223-2.15l3.208-8.761 2.213 6.046.802 2.865zm-1.854-18.324c.731 0 1.258.423 1.258 1.056 0 .528-.317.925-.845.925-.66 0-1.123-.396-1.123-1.023 0-.528.343-.958.71-.958zm-5.743 14.86c-1.353-1.528-2.127-3.483-2.127-5.595 0-2.31 1.002-4.321 2.502-5.617l4.084 11.212zm13.123-6.262c-.027-.845-.528-1.426-.951-1.848-.528-.423-.951-.819-.951-1.373 0-.608.476-1.056 1.11-.132.343.475-.158 1.056 1.03 2.15 1.558-.37 2.15-.37 2.15-.37s-1.875 5.381-3.23 9.429l-3.332-9.281c.581.026 1.029.079 1.442.132zm-1.401-9.176l4.041 11.028c1.373-1.554 2.15-3.518 2.15-5.616 0-2.341-1.029-4.363-2.551-5.656l-3.64 11.244z"/></svg>
+                                            EVENTRIX Plugin for WordPress
+                                        </h3>
+                                        <p class="text-gray-600 text-sm mt-2 max-w-2xl leading-relaxed">High-performance server-side conversions tracking tailored for WordPress and WooCommerce. Zero code or complex GTM setups required.</p>
+                                    </div>
+                                    <a href="{{ route('projects.plugin.download', $project->id) }}" class="inline-flex items-center gap-3 px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md transition hover:shadow-lg active:scale-[0.98] uppercase tracking-widest flex-shrink-0">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        Download Plugin ZIP
+                                    </a>
+                                </div>
+
+                                <div class="border-t border-gray-200/80 pt-8 mt-2 space-y-6">
+                                    <h4 class="text-xs font-black text-gray-900 uppercase tracking-widest border-l-4 border-emerald-600 pl-4">How to install & use:</h4>
+                                    <ol class="space-y-4 text-xs font-bold text-gray-700 uppercase tracking-tight">
+                                        <li class="flex items-start gap-4">
+                                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-[10px] shrink-0">1</span>
+                                            <div class="pt-0.5">Click <strong class="text-gray-900">Download Plugin ZIP</strong> above to export your project-specific tracking configuration.</div>
+                                        </li>
+                                        <li class="flex items-start gap-4">
+                                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-[10px] shrink-0">2</span>
+                                            <div class="pt-0.5">In your WordPress Dashboard, navigate to <strong class="text-gray-900">Plugins &rarr; Add New Plugin</strong> and click <strong class="text-gray-900">Upload Plugin</strong>.</div>
+                                        </li>
+                                        <li class="flex items-start gap-4">
+                                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-[10px] shrink-0">3</span>
+                                            <div class="pt-0.5">Select the downloaded <strong class="text-gray-900">eventrix.zip</strong> file, click <strong class="text-gray-900">Install Now</strong>, and then <strong class="text-gray-900">Activate</strong>.</div>
+                                        </li>
+                                        <li class="flex items-start gap-4">
+                                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-[10px] shrink-0">4</span>
+                                            <div class="pt-0.5">Go to the <strong class="text-gray-900">EVENTRIX</strong> settings menu on your WordPress sidebar to manage tracking modes (Live or Test Mode) and test IDs.</div>
+                                        </li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Node.js -->
                         <div x-show="tab === 'node'" x-transition style="display: none;" class="space-y-6">
                             <div class="bg-gray-950 rounded-2xl p-10 overflow-hidden shadow-2xl relative group">

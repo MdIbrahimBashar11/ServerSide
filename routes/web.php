@@ -42,6 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/projects/{project}/destinations', [ProjectController::class, 'updateDestinations'])->name('projects.destinations.update');
     Route::get('/projects/{project}/events', [ProjectController::class, 'events'])->name('projects.events');
     Route::get('/projects/{project}/events/{event}/logs', [ProjectController::class, 'deliveryLogs'])->name('projects.event.logs');
+    Route::get('/projects/{project}/plugin/download', [ProjectController::class, 'downloadPlugin'])->name('projects.plugin.download');
 
     // Primary Payment Gateway
     Route::get('/billing/pay/{plan}', [\App\Domains\Billing\Controllers\BillingController::class, 'checkout'])->name('billing.pay');
