@@ -56,16 +56,37 @@
                             </select>
                         </div>
 
-                        <div x-data="{ showKey: false }">
+                        <div x-data="{ showKey: false, copied: false }">
                             <label class="block text-sm font-bold text-gray-700 mb-2">Authentication Key</label>
                             <div class="relative">
-                                <input :type="showKey ? 'text' : 'password'" value="{{ $project->tracking_id }}" readonly class="block w-full bg-gray-50 border border-gray-200 text-gray-500 rounded-xl py-3 px-4 cursor-not-allowed font-mono text-sm pr-20" />
+                                <input :type="showKey ? 'text' : 'password'" value="{{ $project->tracking_id }}" readonly class="block w-full bg-gray-50 border border-gray-200 text-gray-500 rounded-xl py-3 px-4 cursor-not-allowed font-mono text-sm pr-32" />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 gap-3">
                                     <button type="button" @click="showKey = !showKey" class="text-gray-400 hover:text-gray-700 transition">
                                         <svg x-show="!showKey" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                         <svg x-show="showKey" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.04a11.959 11.959 0 012.316-2.507m2.316-2.316A10.05 10.05 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21m-4.225-4.225l-4.703-4.703m0 0L9 9m4.775 4.775L15 15M9 9l-4.725-4.725M12 12L9 9"></path></svg>
                                     </button>
-                                    <button type="button" onclick="navigator.clipboard.writeText('{{ $project->tracking_id }}')" class="text-gray-400 hover:text-emerald-600 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
+                                    <button type="button" @click="
+                                        let txt = '{{ $project->tracking_id }}';
+                                        if (navigator.clipboard && window.isSecureContext) {
+                                            navigator.clipboard.writeText(txt);
+                                        } else {
+                                            let textArea = document.createElement('textarea');
+                                            textArea.value = txt;
+                                            textArea.style.position = 'fixed';
+                                            textArea.style.opacity = '0';
+                                            document.body.appendChild(textArea);
+                                            textArea.focus();
+                                            textArea.select();
+                                            document.execCommand('copy');
+                                            document.body.removeChild(textArea);
+                                        }
+                                        copied = true;
+                                        setTimeout(() => copied = false, 2000);
+                                    " class="text-gray-400 hover:text-emerald-600 transition flex items-center gap-1">
+                                        <svg x-show="!copied" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        <svg x-show="copied" class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                        <span x-show="copied" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest" style="display: none;">Copied!</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>

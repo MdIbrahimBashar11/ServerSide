@@ -28,10 +28,43 @@ class BillingController extends Controller
     {
         $request->validate([
             'plan_id' => 'required|exists:subscription_plans,id',
-            'gateway' => 'required|in:stripe,paypal,sslcommerz,bkash',
+            'project_name' => 'nullable|string|max:255',
+            'custom_domain' => 'nullable|string|max:255',
         ]);
 
         $plan = SubscriptionPlan::findOrFail($request->plan_id);
+        $user = $request->user();
+
+        if ($request->filled('project_name') && $request->filled('custom_domain')) {
+            $user->projects()->create([
+                'name' => $request->project_name,
+                'custom_domain' => str_replace(['http://', 'https://', '/'], '', $request->custom_domain),
+                'tracking_id' => 'trk_' . strtoupper(\Illuminate\Support\Str::random(12)),
+                'is_active' => true,
+            ]);
+        }
+
+        if ($plan->price == 0) {
+            $user->event_limit = $plan->event_limit;
+            $user->save();
+
+            \App\Models\BillingInvoice::create([
+                'user_id' => $user->id,
+                'amount' => 0,
+                'gateway' => 'free',
+                'transaction_id' => 'free_' . strtoupper(\Illuminate\Support\Str::random(8)),
+                'status' => 'paid',
+                'due_date' => now(),
+                'paid_at' => now(),
+            ]);
+
+            return redirect()->route('dashboard')->with('status', 'Your Free Trial plan has been successfully activated!');
+        }
+
+        $request->validate([
+            'gateway' => 'required|in:stripe,paypal,sslcommerz,bkash',
+        ]);
+
         $gateway = $request->gateway;
 
         // Redirect based on gateway

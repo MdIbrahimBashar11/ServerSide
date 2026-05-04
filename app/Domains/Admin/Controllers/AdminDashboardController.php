@@ -54,4 +54,61 @@ class AdminDashboardController extends Controller
 
         return back()->with('status', 'User state updated successfully.');
     }
+
+    public function showUser(User $user)
+    {
+        $user->load(['projects.destinations', 'invoices']);
+        return view('admin.users.show', compact('user'));
+    }
+
+    public function editUser(User $user)
+    {
+        return view('admin.users.edit', compact('user'));
+    }
+
+    public function updateUser(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'role' => 'required|string|in:admin,tenant',
+            'status' => 'required|string|in:active,suspended',
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('admin.dashboard')->with('status', 'User details updated successfully.');
+    }
+
+    public function deleteUser(User $user)
+    {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Cannot delete the active superadmin session.');
+        }
+
+        $user->delete();
+        return redirect()->route('admin.dashboard')->with('status', 'User deleted successfully.');
+    }
+
+    public function customers(Request $request)
+    {
+        $query = User::orderBy('created_at', 'desc');
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('name', 'like', "%{$s}%")
+                  ->orWhere('email', 'like', "%{$s}%");
+            });
+        }
+
+        $users = $query->paginate(20);
+
+        return view('admin.customers', compact('users'));
+    }
 }

@@ -11,7 +11,7 @@
                 <a href="{{ route('tickets.index') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-300 text-sm font-bold text-gray-700 hover:bg-gray-50 transition">
                     Support
                 </a>
-                <button x-data x-on:click="$dispatch('open-modal', 'create-project')" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-md hover:bg-emerald-700 transition">
+                <button onclick="checkAndCreateProject()" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-md hover:bg-emerald-700 transition">
                     + Create Project
                 </button>
             </div>
@@ -81,14 +81,14 @@
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-2">No projects found</h3>
                     <p class="text-base text-gray-600 mb-10 max-w-sm">Create your first tracking project to begin collecting data.</p>
-                    <button x-data x-on:click="$dispatch('open-modal', 'create-project')" class="px-10 py-4 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-md hover:bg-emerald-700 transition">Create First Project</button>
+                    <button onclick="checkAndCreateProject()" class="px-10 py-4 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-md hover:bg-emerald-700 transition">Create First Project</button>
                 </div>
                 @endif
             </div>
         </section>
 
         <!-- Subscription -->
-        <section class="pt-12">
+        <section class="pt-12" id="plans">
             <div class="mb-10 text-center">
                 <h2 class="text-2xl font-bold text-gray-900">Subscription Plans</h2>
                 <p class="text-base text-gray-600 mt-2">Scale your data collection capacity.</p>
@@ -96,8 +96,15 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($plans as $plan)
-                    <div class="bg-white border rounded-xl p-8 flex flex-col justify-between shadow-sm {{ $loop->iteration === 3 ? 'border-emerald-600 ring-2 ring-emerald-600/10' : 'border-gray-200' }}">
-                        @if($loop->iteration === 3)
+                    @php
+                        $isCurrentPlan = ($hasPlan && Auth::user()->event_limit == $plan->event_limit);
+                    @endphp
+                    <div class="bg-white border rounded-xl p-8 flex flex-col justify-between shadow-sm {{ $isCurrentPlan ? 'border-emerald-600 ring-2 ring-emerald-600/10' : ($loop->iteration === 3 ? 'border-emerald-600/40 ring-1 ring-emerald-500/5' : 'border-gray-200') }}">
+                        @if($isCurrentPlan)
+                            <div class="text-center mb-4">
+                                <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full border border-emerald-200">Current Plan</span>
+                            </div>
+                        @elseif($loop->iteration === 3)
                             <div class="text-center mb-4">
                                 <span class="bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full">Recommended</span>
                             </div>
@@ -122,15 +129,42 @@
                             </ul>
                         </div>
                         
-                        <a href="{{ route('billing.checkout', $plan->id) }}" class="w-full py-4 rounded-xl text-sm font-bold text-center transition-all {{ $loop->iteration === 3 ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-gray-100 text-gray-900 hover:bg-gray-200' }}">
-                            Choose Plan
-                        </a>
+                        @if($isCurrentPlan)
+                            <span class="w-full py-4 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-xl text-sm font-bold text-center block">
+                                Your Current Plan
+                            </span>
+                        @else
+                            <a href="{{ route('billing.checkout', $plan->id) }}" class="w-full py-4 rounded-xl text-sm font-bold text-center transition-all {{ $loop->iteration === 3 ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-gray-100 text-gray-900 hover:bg-gray-200' }}">
+                                Choose Plan
+                            </a>
+                        @endif
                     </div>
                 @endforeach
             </div>
         </section>
 
         <!-- Modals -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            const hasActivePlan = @json($hasPlan);
+            function checkAndCreateProject() {
+                if (!hasActivePlan) {
+                    Swal.fire({
+                        title: 'Plan Selection Required',
+                        text: 'You must select a subscription plan before creating a project. Let\'s go pick your tier!',
+                        icon: 'warning',
+                        confirmButtonText: 'Select Plan Now',
+                        confirmButtonColor: '#10b981'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('plans').scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                    return;
+                }
+                window.dispatchEvent(new CustomEvent('open-modal', { detail: 'create-project' }));
+            }
+        </script>
         <x-modal name="create-project" focusable>
             <form method="post" action="{{ route('projects.store') }}" class="p-10 bg-white">
                 @csrf

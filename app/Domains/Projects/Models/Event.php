@@ -22,6 +22,10 @@ class Event extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function deliveryLogs() {
+        return $this->hasMany(EventDeliveryLog::class, 'event_id');
+    }
+
     protected static function newFactory()
     {
         return \Database\Factories\EventFactory::new();

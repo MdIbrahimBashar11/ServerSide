@@ -47,25 +47,19 @@
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Primary Workflow</p>
                             <p class="text-sm font-bold text-gray-900 uppercase tracking-tight">{{ $project->platform ?? 'Native Integration' }}</p>
                         </div>
-                        <div class="p-6 rounded-xl border {{ $project->domain_status === 'verified' ? 'bg-emerald-50/50 border-emerald-100' : ($project->domain_status === 'pending' ? 'bg-amber-50/50 border-amber-100' : 'bg-red-50 border-red-100') }}">
-                            <p class="text-[10px] font-bold {{ $project->domain_status === 'verified' ? 'text-emerald-600' : ($project->domain_status === 'pending' ? 'text-amber-600' : 'text-red-600') }} uppercase tracking-widest mb-2">Live Status</p>
+                        <div class="p-6 rounded-xl border {{ $liveStatus === 'verified' ? 'bg-emerald-50/50 border-emerald-100' : ($liveStatus === 'pending' ? 'bg-amber-50/50 border-amber-100' : 'bg-red-50 border-red-100') }}">
+                            <p class="text-[10px] font-bold {{ $liveStatus === 'verified' ? 'text-emerald-600' : ($liveStatus === 'pending' ? 'text-amber-600' : 'text-red-600') }} uppercase tracking-widest mb-2">Live Status</p>
                             <div class="flex items-center gap-2">
-                                <span class="w-2 h-2 {{ $project->domain_status === 'verified' ? 'bg-emerald-500' : ($project->domain_status === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-red-500') }} rounded-full shadow-sm"></span>
-                                <p class="text-sm font-bold {{ $project->domain_status === 'verified' ? 'text-emerald-800' : ($project->domain_status === 'pending' ? 'text-amber-800' : 'text-red-800') }}">
-                                    @if($project->domain_status === 'verified')
-                                        Operational & Syncing
-                                    @elseif($project->domain_status === 'pending')
-                                        Verification Pending
-                                    @else
-                                        Connection Lost / Failed
-                                    @endif
+                                <span class="w-2 h-2 {{ $liveStatus === 'verified' ? 'bg-emerald-500' : ($liveStatus === 'pending' ? 'bg-amber-500 animate-pulse' : 'bg-red-500') }} rounded-full shadow-sm"></span>
+                                <p class="text-sm font-bold {{ $liveStatus === 'verified' ? 'text-emerald-800' : ($liveStatus === 'pending' ? 'text-amber-800' : 'text-red-800') }}">
+                                    {{ $statusText }}
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div x-data="{ showKey: false }">
+                <div x-data="{ showKey: false, copied: false }">
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Project Authentication Key</label>
                     <div class="flex items-center gap-4 bg-gray-900 p-5 rounded-xl border border-white/5 shadow-inner">
                         <code class="flex-1 font-mono text-sm text-emerald-400 truncate tracking-widest" x-text="showKey ? '{{ $project->tracking_id }}' : '•••••••••••••••••••••••••••••••••'"></code>
@@ -74,8 +68,27 @@
                                 <svg x-show="!showKey" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                 <svg x-show="showKey" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.04a11.959 11.959 0 012.316-2.507m2.316-2.316A10.05 10.05 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21m-4.225-4.225l-4.703-4.703m0 0L9 9m4.775 4.775L15 15M9 9l-4.725-4.725M12 12L9 9"></path></svg>
                             </button>
-                            <button onclick="navigator.clipboard.writeText('{{ $project->tracking_id }}')" class="text-gray-400 hover:text-emerald-400 transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            <button @click="
+                                let txt = '{{ $project->tracking_id }}';
+                                if (navigator.clipboard && window.isSecureContext) {
+                                    navigator.clipboard.writeText(txt);
+                                } else {
+                                    let textArea = document.createElement('textarea');
+                                    textArea.value = txt;
+                                    textArea.style.position = 'fixed';
+                                    textArea.style.opacity = '0';
+                                    document.body.appendChild(textArea);
+                                    textArea.focus();
+                                    textArea.select();
+                                    document.execCommand('copy');
+                                    document.body.removeChild(textArea);
+                                }
+                                copied = true;
+                                setTimeout(() => copied = false, 2000);
+                            " class="text-gray-400 hover:text-emerald-400 transition flex items-center gap-1">
+                                <svg x-show="!copied" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                <svg x-show="copied" class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                <span x-show="copied" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest" style="display: none;">Copied!</span>
                             </button>
                         </div>
                     </div>
@@ -138,24 +151,24 @@
                     </div>
                     <div class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100">
                         <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-2">Successful</p>
-                        <p class="text-2xl font-black text-emerald-600 leading-none">0</p>
+                        <p class="text-2xl font-black text-emerald-600 leading-none">{{ number_format($successfulEvents) }}</p>
                     </div>
                     <div class="bg-red-50/50 p-5 rounded-xl border border-red-100">
                         <p class="text-[10px] font-bold text-red-600 uppercase tracking-widest mb-2">Failed</p>
-                        <p class="text-2xl font-black text-red-600 leading-none">0</p>
+                        <p class="text-2xl font-black text-red-600 leading-none">{{ number_format($failedEvents) }}</p>
                     </div>
                     <div class="bg-amber-50/50 p-5 rounded-xl border border-amber-100">
                         <p class="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-2">Pending</p>
-                        <p class="text-2xl font-black text-amber-600 leading-none">0</p>
+                        <p class="text-2xl font-black text-amber-600 leading-none">{{ number_format($pendingEvents) }}</p>
                     </div>
                     <div class="bg-gray-50 p-5 rounded-xl border border-gray-100">
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Blocked</p>
-                        <p class="text-2xl font-black text-gray-900 leading-none">0</p>
+                        <p class="text-2xl font-black text-gray-900 leading-none">{{ number_format($blockedEvents) }}</p>
                     </div>
                     <div class="bg-purple-50/50 p-5 rounded-xl border border-purple-100 relative overflow-hidden">
                         <span class="absolute top-2 right-2 text-[8px] font-bold bg-white px-1.5 py-0.5 rounded-full shadow-sm text-purple-600 uppercase">New</span>
                         <p class="text-[10px] font-bold text-purple-600 uppercase tracking-widest mb-2">Duplicated</p>
-                        <p class="text-2xl font-black text-purple-600 leading-none">0</p>
+                        <p class="text-2xl font-black text-purple-600 leading-none">{{ number_format($duplicatedEvents) }}</p>
                     </div>
                 </div>
 

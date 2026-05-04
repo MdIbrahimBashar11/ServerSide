@@ -41,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/projects/{project}/verify-domain', [ProjectController::class, 'verifyDomain'])->name('projects.verify_domain');
     Route::post('/projects/{project}/destinations', [ProjectController::class, 'updateDestinations'])->name('projects.destinations.update');
     Route::get('/projects/{project}/events', [ProjectController::class, 'events'])->name('projects.events');
+    Route::get('/projects/{project}/events-json', [ProjectController::class, 'eventsJson'])->name('projects.events.json');
     Route::get('/projects/{project}/events/{event}/logs', [ProjectController::class, 'deliveryLogs'])->name('projects.event.logs');
     Route::get('/projects/{project}/plugin/download', [ProjectController::class, 'downloadPlugin'])->name('projects.plugin.download');
 
@@ -86,6 +87,11 @@ use App\Http\Controllers\Admin\AdminTicketController;
 
 Route::middleware(['auth', 'verified', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/customers', [AdminDashboardController::class, 'customers'])->name('customers.index');
+    Route::get('/users/{user}', [AdminDashboardController::class, 'showUser'])->name('users.show');
+    Route::get('/users/{user}/edit', [AdminDashboardController::class, 'editUser'])->name('users.edit');
+    Route::patch('/users/{user}', [AdminDashboardController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{user}', [AdminDashboardController::class, 'deleteUser'])->name('users.destroy');
     Route::patch('/users/{user}/toggle', [AdminDashboardController::class, 'toggleStatus'])->name('users.toggle');
     
     // Packages

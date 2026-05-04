@@ -17,18 +17,36 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden sm:flex sm:items-center sm:gap-8">
-                    <a href="{{ route('dashboard') }}" class="text-sm font-bold {{ request()->routeIs('dashboard') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
-                        Dashboard
-                    </a>
-                    <a href="{{ route('dashboard') }}" class="text-sm font-bold {{ request()->routeIs('projects.*') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
-                        Projects
-                    </a>
-                    <a href="{{ route('affiliate.index') }}" class="text-sm font-bold {{ request()->routeIs('affiliate.*') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
-                        Affiliates
-                    </a>
-                    <a href="{{ route('tickets.index') }}" class="text-sm font-bold {{ request()->routeIs('tickets.*') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
-                        Support
-                    </a>
+                    @if(Auth::user()->role === 'admin')
+                        <a href="{{ route('admin.dashboard') }}" class="text-sm font-bold {{ request()->routeIs('admin.dashboard') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
+                            Admin Dashboard
+                        </a>
+                        <a href="{{ route('admin.customers.index') }}" class="text-sm font-bold {{ request()->routeIs('admin.customers.index') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
+                            Customers
+                        </a>
+                        <a href="{{ route('admin.packages.index') }}" class="text-sm font-bold {{ request()->routeIs('admin.packages.*') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
+                            Packages
+                        </a>
+                        <a href="{{ route('admin.tickets.index') }}" class="text-sm font-bold {{ request()->routeIs('admin.tickets.*') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
+                            All Tickets
+                        </a>
+                        <a href="{{ route('admin.gateways.index') }}" class="text-sm font-bold {{ request()->routeIs('admin.gateways.*') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
+                            Gateways
+                        </a>
+                    @else
+                        <a href="{{ route('dashboard') }}" class="text-sm font-bold {{ request()->routeIs('dashboard') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('dashboard') }}" class="text-sm font-bold {{ request()->routeIs('projects.*') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
+                            Projects
+                        </a>
+                        <a href="{{ route('affiliate.index') }}" class="text-sm font-bold {{ request()->routeIs('affiliate.*') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
+                            Affiliates
+                        </a>
+                        <a href="{{ route('tickets.index') }}" class="text-sm font-bold {{ request()->routeIs('tickets.*') ? 'text-emerald-700' : 'text-gray-600 hover:text-gray-900' }}">
+                            Support
+                        </a>
+                    @endif
                 </div>
             </div>
 

@@ -1,29 +1,9 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $page === 'introduction' ? 'Documentation' : ucwords(str_replace('-', ' ', $page)) }} — Eventrix</title>
-    
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&family=Outfit:wght@400..900&display=swap" rel="stylesheet">
-    
-    <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif !important; 
-            background-color: #ffffff !important;
-            color: #1f2937;
-        }
-        
-        /* Premium Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f3f4f6; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+@extends('layouts.landing')
 
+@section('title', ($page === 'introduction' ? 'Documentation' : ucwords(str_replace('-', ' ', $page))) . ' — Eventrix')
+
+@push('styles')
+    <style>
         /* Prose Overrides for Documentation */
         .prose h1 { color: #111827; font-weight: 800; font-family: 'Outfit', sans-serif; letter-spacing: -0.025em; border-bottom: 1px solid #f3f4f6; padding-bottom: 1rem; margin-bottom: 2rem; }
         .prose h2 { color: #111827; font-weight: 700; margin-top: 3rem; margin-bottom: 1rem; font-family: 'Outfit', sans-serif; }
@@ -71,29 +51,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-</head>
-<body class="antialiased selection:bg-emerald-100 selection:text-emerald-900 overflow-x-hidden min-h-screen flex flex-col">
+@endpush
 
-    <!-- Header -->
-    <nav class="sticky top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div class="max-w-screen-2xl mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-600/20">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                </div>
-                <span class="text-xl font-bold text-gray-900 tracking-tight">Eventrix <span class="text-emerald-600">Docs</span></span>
-            </a>
-            
-            <div class="flex items-center gap-6">
-                <a href="/" class="text-sm font-bold text-gray-500 hover:text-gray-900 transition">Back to Home</a>
-                <a href="{{ route('dashboard') }}" class="px-5 py-2 rounded-lg bg-gray-900 text-white font-bold text-sm hover:bg-black transition">Dashboard</a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="flex-1 flex w-full max-w-screen-2xl mx-auto">
+@section('content')
+<br><br>
+    <div class="pt-28 flex-1 flex w-full max-w-screen-2xl mx-auto">
         <!-- Sidebar Navigation -->
-        <aside class="w-72 hidden lg:block sticky top-[73px] h-[calc(100vh-73px)] border-r border-gray-50 overflow-y-auto py-10 px-6">
+        <aside class="w-72 hidden lg:block sticky top-[100px] h-[calc(100vh-100px)] border-r border-gray-50 overflow-y-auto py-10 px-6">
             @foreach($navigation as $section => $links)
                 <div class="mb-10">
                     <h4 class="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">{{ $section }}</h4>
@@ -138,7 +102,7 @@
         </main>
 
         <!-- Right Sidebar (TOC placeholder) -->
-        <aside class="w-64 hidden xl:block sticky top-[73px] h-[calc(100vh-73px)] py-10 px-6">
+        <aside class="w-64 hidden xl:block sticky top-[100px] h-[calc(100vh-100px)] py-10 px-6">
             <div class="bg-emerald-50/50 rounded-2xl p-6 border border-emerald-100/50">
                 <h5 class="text-emerald-800 font-bold text-sm mb-3">Pro Tip</h5>
                 <p class="text-emerald-700/80 text-xs leading-relaxed">
@@ -175,6 +139,4 @@
             </div>
         @endforeach
     </div>
-
-</body>
-</html>
+@endsection

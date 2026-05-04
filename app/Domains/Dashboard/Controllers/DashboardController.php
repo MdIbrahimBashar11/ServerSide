@@ -12,6 +12,7 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        $hasPlan = \App\Models\BillingInvoice::where('user_id', $user->id)->exists();
         $project = $user->projects()->first();
 
         if (!$project) {
@@ -22,7 +23,8 @@ class DashboardController extends Controller
                 'chartData' => json_encode([]),
                 'chartLabels' => json_encode([]),
                 'plans' => \App\Models\SubscriptionPlan::orderBy('price', 'asc')->get(),
-                'invoices' => $user->hasStripeId() ? $user->invoices() : collect()
+                'invoices' => $user->hasStripeId() ? $user->invoices() : collect(),
+                'hasPlan' => $hasPlan,
             ]);
         }
 
@@ -66,6 +68,7 @@ class DashboardController extends Controller
             'chartData' => json_encode($chartData),
             'plans' => $plans,
             'invoices' => $invoices,
+            'hasPlan' => $hasPlan,
         ]);
     }
 }

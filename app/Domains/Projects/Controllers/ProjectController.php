@@ -14,7 +14,8 @@ class ProjectController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'custom_domain' => 'required|string|max:255|unique:projects,custom_domain'
+            'custom_domain' => 'required|string|max:255|unique:projects,custom_domain',
+            'plan_id' => 'nullable|exists:subscription_plans,id',
         ]);
 
         if ($request->user()->projects()->count() >= 5) {
@@ -28,6 +29,13 @@ class ProjectController extends Controller
             'is_active' => true,
         ]);
 
+        if ($request->filled('plan_id')) {
+            $plan = \App\Models\SubscriptionPlan::find($request->plan_id);
+            if ($plan && $plan->price > 0) {
+                return redirect()->route('billing.pay', $plan->id)->with('status', 'Please complete the payment for the selected plan.');
+            }
+        }
+
         return back()->with('status', 'Tracking infrastructure generated for ' . $project->custom_domain);
     }
 
@@ -36,6 +44,40 @@ class ProjectController extends Controller
         if($project->user_id !== auth()->id()) abort(403);
         
         $totalEvents = Event::where('project_id', $project->id)->count();
+
+        $successfulEvents = Event::where('project_id', $project->id)
+            ->whereHas('deliveryLogs', function($q) {
+                $q->where('status', 'success');
+            })->count();
+
+        $failedEvents = Event::where('project_id', $project->id)
+            ->whereHas('deliveryLogs', function($q) {
+                $q->where('status', 'failed');
+            })->count();
+
+        $pendingEvents = Event::where('project_id', $project->id)
+            ->whereDoesntHave('deliveryLogs')
+            ->count();
+
+        $blockedEvents = Event::where('project_id', $project->id)
+            ->where('source', 'blocked')
+            ->count();
+
+        $duplicatedEvents = Event::where('project_id', $project->id)
+            ->where('source', 'duplicate')
+            ->count();
+
+        $latestEvent = Event::where('project_id', $project->id)->latest('event_time')->first();
+        if (!$latestEvent) {
+            $liveStatus = 'pending';
+            $statusText = 'Awaiting First Event / Setup Pending';
+        } elseif ($latestEvent->event_time->lt(now()->subDay())) {
+            $liveStatus = 'error';
+            $statusText = 'No Recent Data / Connection Idle';
+        } else {
+            $liveStatus = 'verified';
+            $statusText = 'Active & Operational';
+        }
 
         $query = Event::where('project_id', $project->id)->orderBy('event_time', 'desc');
 
@@ -49,7 +91,11 @@ class ProjectController extends Controller
 
         $events = $query->limit(10)->get();
 
-        return view('projects.show', compact('project', 'totalEvents', 'events'));
+        return view('projects.show', compact(
+            'project', 'totalEvents', 'successfulEvents', 'failedEvents', 
+            'pendingEvents', 'blockedEvents', 'duplicatedEvents', 'events', 
+            'liveStatus', 'statusText'
+        ));
     }
 
     public function export(Project $project, Request $request)
@@ -198,11 +244,25 @@ class ProjectController extends Controller
     {
         if ($project->user_id !== auth()->id()) abort(403);
 
-        $logs = \App\Domains\Projects\Models\EventDeliveryLog::whereHas('event', function($query) use ($project) {
-            $query->where('project_id', $project->id);
-        })->with(['event', 'destination'])->latest()->limit(50)->get();
+        $logs = \App\Domains\Projects\Models\EventDeliveryLog::where('event_id', $event->id)
+            ->with(['event', 'destination'])
+            ->latest()
+            ->limit(50)
+            ->get();
 
         return response()->json($logs);
+    }
+
+    public function eventsJson(Project $project)
+    {
+        if ($project->user_id !== auth()->id()) abort(403);
+
+        $events = Event::where('project_id', $project->id)
+            ->orderBy('event_time', 'desc')
+            ->limit(10)
+            ->get();
+
+        return response()->json($events);
     }
 
     public function downloadPlugin(Project $project)

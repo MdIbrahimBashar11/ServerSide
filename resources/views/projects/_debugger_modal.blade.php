@@ -4,10 +4,26 @@
     <div class="p-0 bg-white h-[90vh] md:h-[85vh] flex flex-col overflow-hidden" 
          x-data="{ 
             selectedEvent: null, 
+            events: {{ json_encode($events) }},
             logs: [], 
             loading: false,
+            pollInterval: null,
+            init() {
+                this.pollEvents();
+                this.pollInterval = setInterval(() => this.pollEvents(), 3000);
+            },
+            destroy() {
+                if (this.pollInterval) clearInterval(this.pollInterval);
+            },
+            pollEvents() {
+                fetch('{{ route('projects.events.json', $project->id) }}')
+                    .then(r => r.json())
+                    .then(data => {
+                        this.events = data;
+                    })
+                    .catch(e => console.error(e));
+            },
             fetchLogs(eventData) {
-                // Click to not show: If clicking the already selected event, deselect it.
                 if (this.selectedEvent && this.selectedEvent.id === eventData.id) {
                     this.selectedEvent = null;
                     this.logs = [];
@@ -36,7 +52,8 @@
                     }, 100);
                 }
             }
-         }">
+         }"
+         @close.window="if (pollInterval) clearInterval(pollInterval)">
         
         <!-- Modal Header -->
         <div class="p-4 md:p-6 border-b border-gray-100 flex items-center justify-between bg-white z-30 shadow-sm">
@@ -62,37 +79,39 @@
             <div class="w-full md:w-80 lg:w-96 flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col bg-white max-h-[40vh] md:max-h-full shadow-sm z-10">
                 <div class="p-4 md:p-6 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0">
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Events Pool</span>
-                    <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">{{ count($events) }} Live</span>
+                    <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100" x-text="events.length + ' Live'"></span>
                 </div>
                 
                 <div class="flex-1 overflow-y-auto custom-scrollbar bg-gray-50/10">
-                    @forelse($events as $event)
-                        <button @click="fetchLogs({{ json_encode($event) }})" 
+                    <template x-for="event in events" :key="event.id">
+                        <button @click="fetchLogs(event)" 
                                 class="w-full p-4 md:p-6 text-left border-b border-gray-100 hover:bg-white transition-all group relative overflow-hidden"
-                                :class="selectedEvent && selectedEvent.id == {{ $event->id }} ? 'bg-white shadow-md z-10' : 'opacity-70 hover:opacity-100'">
+                                :class="selectedEvent && selectedEvent.id == event.id ? 'bg-white shadow-md z-10' : 'opacity-70 hover:opacity-100'">
                             
                             <!-- Active Status Line -->
-                            <div x-show="selectedEvent && selectedEvent.id == {{ $event->id }}" 
+                            <div x-show="selectedEvent && selectedEvent.id == event.id" 
                                  class="absolute inset-y-0 left-0 w-1.5 bg-emerald-600 shadow-[2px_0_12px_rgba(16,185,129,0.5)]"></div>
                             
                             <div class="flex justify-between items-start mb-2 md:mb-3">
-                                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{{ $event->event_time->format('H:i:s') }}</span>
-                                <span class="text-[8px] font-bold px-2 py-0.5 rounded-full {{ $event->platform === 'fb_capi' ? 'bg-blue-600 text-white' : 'bg-gray-900 text-white' }} uppercase tracking-tighter">{{ $event->platform }}</span>
+                                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest" x-text="new Date(event.event_time).toLocaleTimeString()"></span>
+                                <span class="text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter" 
+                                      :class="event.platform === 'fb_capi' ? 'bg-blue-600 text-white' : 'bg-gray-900 text-white'"
+                                      x-text="event.platform"></span>
                             </div>
                             <h4 class="text-sm font-bold text-gray-900 truncate uppercase tracking-tight group-hover:text-emerald-600 transition-colors"
-                                :class="selectedEvent && selectedEvent.id == {{ $event->id }} ? 'text-emerald-700' : ''">
-                                {{ $event->event_name }}
+                                :class="selectedEvent && selectedEvent.id == event.id ? 'text-emerald-700' : ''"
+                                x-text="event.event_name">
                             </h4>
                             <p class="text-[10px] text-gray-400 font-bold mt-1.5 md:mt-2 uppercase tracking-widest flex items-center gap-2">
                                 <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                {{ $event->user_data['client_ip_address'] ?? 'N/A' }}
+                                <span x-text="event.user_data && event.user_data.client_ip_address ? event.user_data.client_ip_address : 'N/A'"></span>
                             </p>
                         </button>
-                    @empty
-                        <div class="py-12 md:py-24 text-center">
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Awaiting node capture...</p>
-                        </div>
-                    @endforelse
+                    </template>
+
+                    <div x-show="events.length === 0" class="py-12 md:py-24 text-center">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest italic">Awaiting node capture...</p>
+                    </div>
                 </div>
             </div>
 
