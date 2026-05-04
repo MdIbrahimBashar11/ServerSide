@@ -105,4 +105,140 @@
             </div>
         </div>
     </section>
+
+    <!-- How It Works Section -->
+    <section class="py-24 bg-white" id="how-it-works">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-widest mb-4">Process Workflow</span>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
+                <p class="text-gray-600 text-lg">Set up server-side tracking in minutes with our simple 3-step process.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <!-- Step 1 -->
+                <div class="p-8 bg-gray-50 rounded-2xl border border-gray-100 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition duration-300">
+                    <div>
+                        <span class="text-4xl font-extrabold text-emerald-600 mb-4 block">01</span>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Create Account & Project</h3>
+                        <p class="text-gray-600 leading-relaxed">Sign up, select your tier, and create your first tracking project within our dashboard.</p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="p-8 bg-gray-50 rounded-2xl border border-gray-100 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition duration-300">
+                    <div>
+                        <span class="text-4xl font-extrabold text-emerald-600 mb-4 block">02</span>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Integrate Tracking SDK</h3>
+                        <p class="text-gray-600 leading-relaxed">Add our direct tracking snippet or call our webhook endpoint on any conversion point on your server.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="p-8 bg-gray-50 rounded-2xl border border-gray-100 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1 transition duration-300">
+                    <div>
+                        <span class="text-4xl font-extrabold text-emerald-600 mb-4 block">03</span>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Monitor Data Flow</h3>
+                        <p class="text-gray-600 leading-relaxed">Bypass all client-side blocks. See events arriving real-time and stream them straight to ad platforms.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="py-24 bg-gray-50" id="benefits">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-widest mb-4">Why Eventrix</span>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Maximize Your ROI</h2>
+                <p class="text-gray-600 text-lg">Outperform your competitors by fixing broken attribution models.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="bg-white p-10 rounded-2xl border border-gray-200 flex flex-col justify-between shadow-sm hover:border-emerald-500 transition">
+                    <div>
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Optimize Marketing Spend</h3>
+                        <p class="text-gray-600 leading-relaxed">When data loss occurs, ad platforms cannot optimize your campaigns correctly. Server-side tracking unlocks higher match rates and lowers your cost per acquisition.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-10 rounded-2xl border border-gray-200 flex flex-col justify-between shadow-sm hover:border-emerald-500 transition">
+                    <div>
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Future-Proof Architecture</h3>
+                        <p class="text-gray-600 leading-relaxed">Browser cookies are getting phased out. Server-to-server ensures you have complete ownership and security of your first-party customer signals.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-24 bg-white" id="faq">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-widest mb-4">Support Center</span>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+                <p class="text-gray-600 text-lg">Everything you need to know about setting up tracking.</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-gray-50 border border-gray-200 p-8 rounded-xl">
+                    <h3 class="text-lg font-bold text-gray-900 mb-3">What is server-side tracking?</h3>
+                    <p class="text-gray-600 leading-relaxed">Instead of relying on browser scripts that can be blocked, your server sends purchase or lead data directly to advertising networks using highly secure server APIs.</p>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 p-8 rounded-xl">
+                    <h3 class="text-lg font-bold text-gray-900 mb-3">How long does integration take?</h3>
+                    <p class="text-gray-600 leading-relaxed">It takes less than 10 minutes to register, set up a project, and install the provided SDK or Webhook snippet into your website code.</p>
+                </div>
+
+                <div class="bg-gray-50 border border-gray-200 p-8 rounded-xl">
+                    <h3 class="text-lg font-bold text-gray-900 mb-3">What happens if I exceed my event limit?</h3>
+                    <p class="text-gray-600 leading-relaxed">Your data flow will pause if the monthly limit is exceeded, but you can upgrade your plan at any time within the billing dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-24 bg-gray-50 border-t border-gray-100" id="contact">
+        <div class="max-w-xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-widest mb-4">Contact Support</span>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Get in Touch</h2>
+                <p class="text-gray-600 text-lg">Send a message directly via WhatsApp</p>
+            </div>
+
+            <form onsubmit="handleContact(event)" class="bg-white p-8 md:p-10 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Full Name</label>
+                    <input type="text" id="contact-name" placeholder="John Doe" class="block w-full border-gray-200 rounded-xl py-4 px-5 text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 font-bold transition" required />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Message</label>
+                    <textarea id="contact-message" rows="4" placeholder="Hello! I need help with..." class="block w-full border-gray-200 rounded-xl py-4 px-5 text-gray-900 focus:ring-emerald-500 focus:border-emerald-500 font-bold transition" required></textarea>
+                </div>
+                <button type="submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold uppercase tracking-widest shadow-md transition hover:-translate-y-0.5">
+                    Submit Message
+                </button>
+            </form>
+        </div>
+
+        <script>
+            function handleContact(e) {
+                e.preventDefault();
+                const name = document.getElementById('contact-name').value;
+                const message = document.getElementById('contact-message').value;
+                const text = `Hello Eventrix! My name is ${encodeURIComponent(name)}. ${encodeURIComponent(message)}`;
+                window.open(`https://wa.me/8801713728112?text=${text}`, '_blank');
+            }
+        </script>
+    </section>
 @endsection
