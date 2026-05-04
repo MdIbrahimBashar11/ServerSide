@@ -10,3 +10,4 @@ Route::get('/user', function (Request $request) {
 
 // Server-Side Tracking Ingestion Endpoint
 Route::middleware('throttle:300,1')->post('/track-event', [IngestionController::class, 'collect']);
+Route::middleware('throttle:300,1')->post('/events', [IngestionController::class, 'collect']);
