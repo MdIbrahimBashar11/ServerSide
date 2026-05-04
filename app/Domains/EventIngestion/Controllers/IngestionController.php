@@ -45,7 +45,7 @@ class IngestionController extends Controller
         // 2. Validate request data
         $validated = $request->validate([
             'user_id' => 'nullable|string',
-            'event_name' => 'required|string|in:PageView,AddToCart,Purchase,Lead,ViewContent',
+            'event_name' => 'required|string|in:PageView,ViewContent,Search,AddToCart,AddToWishlist,InitiateCheckout,AddPaymentInfo,Purchase,Lead',
             'event_id' => 'required|string',
             'timestamp' => 'nullable|integer',
             'user_data' => 'nullable|array',

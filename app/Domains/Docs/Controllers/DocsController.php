@@ -27,6 +27,7 @@ class DocsController extends Controller
                 'introduction' => 'Introduction',
                 'setup' => 'Setup & Benefits',
                 'installation' => 'Installation Guide',
+                'javascript-tracking' => 'JavaScript Tracking Guide',
             ],
             'Integrations' => [
                 'facebook-capi' => 'Facebook Conversion API',
