@@ -44,6 +44,7 @@ class ProjectController extends Controller
         if($project->user_id !== auth()->id()) abort(403);
         
         $totalEvents = Event::where('project_id', $project->id)->count();
+        $accountTotalEvents = Event::where('user_id', auth()->id())->count();
 
         $successfulEvents = Event::where('project_id', $project->id)
             ->whereHas('deliveryLogs', function($q) {
@@ -56,7 +57,7 @@ class ProjectController extends Controller
             })->count();
 
         $pendingEvents = Event::where('project_id', $project->id)
-            ->whereDoesntHave('deliveryLogs')
+            ->where('status', 'pending')
             ->count();
 
         $blockedEvents = Event::where('project_id', $project->id)
@@ -92,7 +93,7 @@ class ProjectController extends Controller
         $events = $query->limit(10)->get();
 
         return view('projects.show', compact(
-            'project', 'totalEvents', 'successfulEvents', 'failedEvents', 
+            'project', 'totalEvents', 'accountTotalEvents', 'successfulEvents', 'failedEvents', 
             'pendingEvents', 'blockedEvents', 'duplicatedEvents', 'events', 
             'liveStatus', 'statusText'
         ));

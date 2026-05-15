@@ -99,8 +99,9 @@
             <div class="space-y-8">
                 <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
                     @php
-                        $limit = Auth::user()->subscriptionPlan->event_limit ?? 10000;
-                        $percent = min(($totalEvents / $limit) * 100, 100);
+                        $limit = Auth::user()->event_limit ?? 10000;
+                        $count = $accountTotalEvents ?? 0;
+                        $percent = $limit > 0 ? min(($count / $limit) * 100, 100) : 0;
                     @endphp
                     
                     <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-10 border-l-4 border-gray-900 pl-4">Account Throughput</h3>
@@ -113,17 +114,17 @@
                         <div class="w-full bg-gray-100 rounded-full h-3 mb-4">
                             <div class="bg-gray-900 h-full rounded-full transition-all duration-[1500ms]" style="width: {{ $percent }}%"></div>
                         </div>
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest text-center">{{ number_format($totalEvents) }} / {{ number_format($limit) }} events tracked</p>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest text-center">{{ number_format($count) }} / {{ number_format($limit) }} events tracked</p>
                     </div>
 
                     <div class="space-y-4 pt-6 border-t border-gray-50">
                         <div class="flex justify-between text-sm font-bold">
-                            <span class="text-gray-400 uppercase tracking-widest text-[10px]">Project Data</span>
+                            <span class="text-gray-400 uppercase tracking-widest text-[10px]">Project Contribution</span>
                             <span class="text-gray-900">{{ number_format($totalEvents) }} ev</span>
                         </div>
                         <div class="flex justify-between text-sm font-bold">
-                            <span class="text-gray-400 uppercase tracking-widest text-[10px]">Headroom</span>
-                            <span class="text-emerald-600">+{{ number_format(max(0, $limit - $totalEvents)) }}</span>
+                            <span class="text-gray-400 uppercase tracking-widest text-[10px]">Account Headroom</span>
+                            <span class="text-emerald-600">+{{ number_format(max(0, (Auth::user()->event_limit ?? 10000) - $accountTotalEvents)) }}</span>
                         </div>
                     </div>
                 </div>
@@ -146,28 +147,28 @@
                 <!-- Stats Cards Row -->
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
                     <div class="bg-gray-50 p-5 rounded-xl border border-gray-100">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Total Events</p>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2">Total Events</p>
                         <p class="text-2xl font-black text-gray-900 leading-none">{{ number_format($totalEvents) }}</p>
                     </div>
                     <div class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100">
-                        <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-2">Successful</p>
+                        <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wide mb-2">Successful</p>
                         <p class="text-2xl font-black text-emerald-600 leading-none">{{ number_format($successfulEvents) }}</p>
                     </div>
                     <div class="bg-red-50/50 p-5 rounded-xl border border-red-100">
-                        <p class="text-[10px] font-bold text-red-600 uppercase tracking-widest mb-2">Failed</p>
+                        <p class="text-[10px] font-bold text-red-600 uppercase tracking-wide mb-2">Failed</p>
                         <p class="text-2xl font-black text-red-600 leading-none">{{ number_format($failedEvents) }}</p>
                     </div>
                     <div class="bg-amber-50/50 p-5 rounded-xl border border-amber-100">
-                        <p class="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-2">Pending</p>
+                        <p class="text-[10px] font-bold text-amber-600 uppercase tracking-wide mb-2">Pending</p>
                         <p class="text-2xl font-black text-amber-600 leading-none">{{ number_format($pendingEvents) }}</p>
                     </div>
                     <div class="bg-gray-50 p-5 rounded-xl border border-gray-100">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Blocked</p>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wide mb-2">Blocked</p>
                         <p class="text-2xl font-black text-gray-900 leading-none">{{ number_format($blockedEvents) }}</p>
                     </div>
                     <div class="bg-purple-50/50 p-5 rounded-xl border border-purple-100 relative overflow-hidden">
-                        <span class="absolute top-2 right-2 text-[8px] font-bold bg-white px-1.5 py-0.5 rounded-full shadow-sm text-purple-600 uppercase">New</span>
-                        <p class="text-[10px] font-bold text-purple-600 uppercase tracking-widest mb-2">Duplicated</p>
+                        <span class="absolute top-1 right-1 text-[7px] font-bold bg-white px-1.5 py-0.5 rounded-full shadow-sm text-purple-600 uppercase">New</span>
+                        <p class="text-[10px] font-bold text-purple-600 uppercase tracking-wide mb-2">Duplicated</p>
                         <p class="text-2xl font-black text-purple-600 leading-none">{{ number_format($duplicatedEvents) }}</p>
                     </div>
                 </div>

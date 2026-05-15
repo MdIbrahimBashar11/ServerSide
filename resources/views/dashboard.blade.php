@@ -44,12 +44,12 @@
 
                     <div class="mb-10">
                         @php
-                            $limit = Auth::user()->subscriptionPlan->event_limit ?? 10000;
-                            $count = App\Domains\Projects\Models\Event::where('project_id', $project->id)->count();
-                            $percent = min(($count / $limit) * 100, 100);
+                            $limit = Auth::user()->event_limit ?? 10000;
+                            $count = $totalEventsCount ?? 0;
+                            $percent = $limit > 0 ? min(($count / $limit) * 100, 100) : 0;
                         @endphp
                         <div class="flex justify-between items-center mb-3">
-                            <span class="text-sm font-bold text-gray-700">Monthly Usage</span>
+                            <span class="text-sm font-bold text-gray-700">Monthly Account Usage</span>
                             <span class="text-sm font-bold text-gray-900">{{ number_format($percent, 1) }}%</span>
                         </div>
                         <div class="w-full bg-gray-100 rounded-full h-3">
@@ -57,7 +57,7 @@
                         </div>
                         <div class="flex justify-between mt-3">
                             <p class="text-xs font-bold text-gray-600">{{ number_format($count) }} / {{ number_format($limit) }} events Used</p>
-                            <p class="text-xs font-bold text-emerald-600">{{ number_format($limit - $count) }} Available</p>
+                            <p class="text-xs font-bold text-emerald-600">{{ number_format(max(0, $limit - $count)) }} Available</p>
                         </div>
                     </div>
 

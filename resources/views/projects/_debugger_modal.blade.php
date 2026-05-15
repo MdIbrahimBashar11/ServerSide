@@ -102,10 +102,13 @@
                                 :class="selectedEvent && selectedEvent.id == event.id ? 'text-emerald-700' : ''"
                                 x-text="event.event_name">
                             </h4>
-                            <p class="text-[10px] text-gray-400 font-bold mt-1.5 md:mt-2 uppercase tracking-widest flex items-center gap-2">
-                                <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                <span x-text="event.user_data && event.user_data.client_ip_address ? event.user_data.client_ip_address : 'N/A'"></span>
-                            </p>
+                            <div class="flex items-center justify-between mt-2 md:mt-3">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full" :class="event.status === 'processed' ? 'bg-emerald-500' : (event.status === 'failed' ? 'bg-red-500' : 'bg-amber-500')"></span>
+                                    <span x-text="event.user_data && event.user_data.client_ip_address ? event.user_data.client_ip_address : 'N/A'"></span>
+                                </p>
+                                <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest" x-text="event.status"></span>
+                            </div>
                         </button>
                     </template>
 
@@ -143,6 +146,10 @@
                                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest" x-text="'Ref: ' + selectedEvent.id"></span>
                                         <span class="w-1 h-1 bg-gray-200 rounded-full"></span>
                                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest" x-text="selectedEvent.event_time"></span>
+                                        <span class="w-1 h-1 bg-gray-200 rounded-full"></span>
+                                        <span class="px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest"
+                                              :class="selectedEvent.status === 'processed' ? 'bg-emerald-100 text-emerald-700' : (selectedEvent.status === 'failed' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700')"
+                                              x-text="selectedEvent.status"></span>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3">
@@ -211,6 +218,7 @@
                                             <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                                          </div>
                                          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">No outbound handshake detected for this packet</p>
+                                         <p class="text-[8px] font-bold text-gray-400 mt-2 uppercase tracking-tight">Ensure you have configured Destinations (FB Pixel, TikTok Token, etc.) in Project Settings</p>
                                     </div>
                                 </div>
                             </div>

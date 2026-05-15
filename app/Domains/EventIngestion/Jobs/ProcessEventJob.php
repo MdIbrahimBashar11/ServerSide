@@ -29,7 +29,7 @@ class ProcessEventJob implements ShouldQueue
     public function handle(): void
     {
         $destinations = $this->event->project?->destinations()->where('is_active', true)->get() ?? collect();
-        $errors = [];
+        $failures = [];
 
         foreach ($destinations as $destination) {
             try {
@@ -48,9 +48,15 @@ class ProcessEventJob implements ShouldQueue
             }
         }
 
-        // If there were any errors, we still want the job to be marked as failed for retries
+        // Mark as processed regardless of individual destination failures (as logs track them)
+        // unless we want to retry the whole job
+        $this->event->update([
+            'status' => count($failures) === count($destinations) && count($destinations) > 0 ? 'failed' : 'processed',
+            'processed_at' => now()
+        ]);
+
         if (!empty($failures)) {
-            Log::warning("Event Forwarding partially failed for some destinations: " . implode(', ', $failures));
+            \Log::warning("Event Forwarding partially failed for some destinations: " . implode(', ', $failures));
         }
     }
 }
