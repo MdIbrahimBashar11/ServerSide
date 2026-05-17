@@ -48,6 +48,9 @@ class Eventrix_Plugin {
         
         // Frontend
         add_action('wp_enqueue_scripts', array($this, 'frontend_scripts'));
+
+        // Settings Link in Plugins list
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'plugin_action_links'));
     }
 
     public function activate() {
@@ -82,6 +85,12 @@ class Eventrix_Plugin {
 
     public function deactivate() {
         // No cleanup required yet
+    }
+
+    public function plugin_action_links($links) {
+        $settings_link = '<a href="' . esc_url(admin_url('options-general.php?page=eventrix-settings')) . '">' . esc_html__('Settings', 'eventrix-pixel') . '</a>';
+        array_unshift($links, $settings_link);
+        return $links;
     }
 
     // --- ADMIN ---
