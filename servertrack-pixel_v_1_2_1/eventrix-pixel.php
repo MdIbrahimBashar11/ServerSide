@@ -400,6 +400,11 @@ class Eventrix_Plugin {
         $tracking_url = get_option('eventrix_tracking_url');
         if (!$tracking_id || !$tracking_url) return;
 
+        // Force HTTPS if page is loaded over SSL to prevent Mixed Content blocking
+        if (is_ssl() && strpos($tracking_url, 'http://') === 0) {
+            $tracking_url = 'https://' . substr($tracking_url, 7);
+        }
+
         // Resolve absolute track.js URL from endpoint (replace API paths with JS path)
         $sdk_url = str_replace(array('/api/track-event', '/api/events'), '/js/track.js', $tracking_url);
 
