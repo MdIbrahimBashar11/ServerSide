@@ -26,8 +26,8 @@ add_filter( 'plugin_row_meta', 'eventrix_add_row_meta_links', 10, 2 );
 function eventrix_add_row_meta_links( $links, $file ) {
     if ( plugin_basename( __FILE__ ) === $file ) {
         $row_meta = array(
-            'docs'    => '<a href="https://recordsync.cam/docs" target="_blank" aria-label="View Documentation">Documentation</a>',
-            'support' => '<a href="https://recordsync.cam/tickets" target="_blank" aria-label="Contact Support">Support</a>',
+            'docs'    => '<a href="https://mysite.recordsync.cam/docs" target="_blank" aria-label="View Documentation">Documentation</a>',
+            'support' => '<a href="https://mysite.recordsync.cam/tickets" target="_blank" aria-label="Contact Support">Support</a>',
         );
         return array_merge( $links, $row_meta );
     }
@@ -266,7 +266,7 @@ class Eventrix_Plugin {
                                 <div class="st-alert">
                                     <strong><?php echo esc_html__('First-Party CNAME Cloaking', 'eventrix-pixel'); ?></strong>
                                     <p style="margin:5px 0 10px;"><?php echo esc_html__('To bypass ad blockers completely, set up a custom subdomain in your DNS pointing to recordsync.cam.', 'eventrix-pixel'); ?></p>
-                                    <a href="https://recordsync.cam/docs" target="_blank" style="text-decoration:none; color:#013D29; font-weight:600;">
+                                    <a href="https://mysite.recordsync.cam/docs" target="_blank" style="text-decoration:none; color:#013D29; font-weight:600;">
                                         <?php echo esc_html__('Read the CNAME Setup Guide &rarr;', 'eventrix-pixel'); ?>
                                     </a>
                                 </div>
@@ -366,10 +366,10 @@ class Eventrix_Plugin {
                     <div class="st-column-sidebar">
                         <div class="st-card">
                             <h2><?php echo esc_html__('Quick Links', 'eventrix-pixel'); ?></h2>
-                            <a href="https://recordsync.cam/docs" target="_blank" class="st-sidebar-link">
+                            <a href="https://mysite.recordsync.cam/docs" target="_blank" class="st-sidebar-link">
                                 <span class="dashicons dashicons-book" style="margin-right:8px;"></span> <?php echo esc_html__('Documentation', 'eventrix-pixel'); ?>
                             </a>
-                            <a href="https://recordsync.cam/tickets" target="_blank" class="st-sidebar-link">
+                            <a href="https://mysite.recordsync.cam/tickets" target="_blank" class="st-sidebar-link">
                                 <span class="dashicons dashicons-sos" style="margin-right:8px;"></span> <?php echo esc_html__('Contact Support', 'eventrix-pixel'); ?>
                             </a>
                         </div>
