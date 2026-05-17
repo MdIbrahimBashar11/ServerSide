@@ -29,7 +29,7 @@
 
     // Dynamic Payload Compiler
     window.ServerTrack = {
-        fire: function(eventName, customParams = {}) {
+        fire: function(eventName, customParams = {}, extraUserData = {}) {
             
             // Reconstruct Universal Identifiers
             const fbp = getCustomCookie('_fbp');
@@ -41,14 +41,14 @@
                 event_id: 'evt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10),
                 timestamp: Math.floor(Date.now() / 1000),
                 source_url: window.location.href,
-                user_data: {
+                user_data: Object.assign({
                     client_user_agent: navigator.userAgent,
                     fbp: fbp,
                     fbc: fbc ? `fb.1.${Date.now()}.${fbc}` : null,
                     utm_source: getQueryParam('utm_source'),
                     utm_medium: getQueryParam('utm_medium'),
                     utm_campaign: getQueryParam('utm_campaign')
-                },
+                }, extraUserData),
                 custom_data: customParams
             };
 
@@ -71,6 +71,14 @@
     // Auto-fire standard PageView upon initialization
     if (env.autoTrack !== false) {
         window.ServerTrack.fire('PageView');
+    }
+
+    // Process queued events
+    if (env.queue && Array.isArray(env.queue)) {
+        env.queue.forEach(item => {
+            window.ServerTrack.fire(item.eventName, item.data, item.userData);
+        });
+        env.queue = [];
     }
 
 })();
