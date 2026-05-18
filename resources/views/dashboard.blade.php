@@ -42,22 +42,43 @@
                         <span class="px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100">Status: Active</span>
                     </div>
 
-                    <div class="mb-10">
+                    <div class="mb-10 space-y-6">
                         @php
                             $limit = Auth::user()->event_limit ?? 10000;
-                            $count = $totalEventsCount ?? 0;
-                            $percent = $limit > 0 ? min(($count / $limit) * 100, 100) : 0;
+                            $accountCount = $totalEventsCount ?? 0;
+                            $projectCount = \App\Domains\Projects\Models\Event::where('project_id', $project->id)->count();
+                            
+                            $accountPercent = $limit > 0 ? min(($accountCount / $limit) * 100, 100) : 0;
+                            $projectPercent = $limit > 0 ? min(($projectCount / $limit) * 100, 100) : 0;
                         @endphp
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-sm font-bold text-gray-700">Monthly Account Usage</span>
-                            <span class="text-sm font-bold text-gray-900">{{ number_format($percent, 1) }}%</span>
+                        
+                        <!-- Project Specific Usage -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold text-gray-700 uppercase tracking-widest">This Project Usage</span>
+                                <span class="text-xs font-bold text-gray-900">{{ number_format($projectPercent, 1) }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2">
+                                <div class="bg-blue-500 h-full rounded-full transition-all duration-1000" style="width: {{ $projectPercent }}%"></div>
+                            </div>
+                            <div class="flex justify-between mt-2">
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{{ number_format($projectCount) }} Events Tracked</p>
+                            </div>
                         </div>
-                        <div class="w-full bg-gray-100 rounded-full h-3">
-                            <div class="bg-emerald-600 h-full rounded-full transition-all duration-1000" style="width: {{ $percent }}%"></div>
-                        </div>
-                        <div class="flex justify-between mt-3">
-                            <p class="text-xs font-bold text-gray-600">{{ number_format($count) }} / {{ number_format($limit) }} events Used</p>
-                            <p class="text-xs font-bold text-emerald-600">{{ number_format(max(0, $limit - $count)) }} Available</p>
+
+                        <!-- Total Account Usage -->
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold text-gray-700 uppercase tracking-widest">Account Total Usage</span>
+                                <span class="text-xs font-bold text-gray-900">{{ number_format($accountPercent, 1) }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2">
+                                <div class="bg-emerald-600 h-full rounded-full transition-all duration-1000" style="width: {{ $accountPercent }}%"></div>
+                            </div>
+                            <div class="flex justify-between mt-2">
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{{ number_format($accountCount) }} / {{ number_format($limit) }} Limit</p>
+                                <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">{{ number_format(max(0, $limit - $accountCount)) }} Available</p>
+                            </div>
                         </div>
                     </div>
 
