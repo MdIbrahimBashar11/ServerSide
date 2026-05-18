@@ -174,23 +174,33 @@
                 </div>
 
                 <!-- Main Chart Area -->
-                <div class="h-[300px] w-full bg-gray-50/50 rounded-2xl border border-dashed border-gray-200 flex items-center justify-center relative overflow-hidden group">
-                    <div class="absolute inset-0 flex flex-col items-center justify-center opacity-30 group-hover:opacity-100 transition-opacity">
-                        <div class="flex items-end gap-1 mb-4 h-20">
-                            <div class="w-2 bg-emerald-500 rounded-t-sm h-8"></div>
-                            <div class="w-2 bg-emerald-500 rounded-t-sm h-12"></div>
-                            <div class="w-2 bg-emerald-500 rounded-t-sm h-16"></div>
-                            <div class="w-2 bg-emerald-500 rounded-t-sm h-10"></div>
-                            <div class="w-2 bg-emerald-500 rounded-t-sm h-14"></div>
-                            <div class="w-2 bg-emerald-500 rounded-t-sm h-20"></div>
-                            <div class="w-2 bg-emerald-500 rounded-t-sm h-12"></div>
-                        </div>
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]">Temporal Node Distribution Chart</p>
+                <div class="h-[300px] w-full bg-white rounded-2xl border border-gray-200 flex flex-col relative overflow-hidden p-6 pt-16">
+                    <div class="flex-1 flex items-end justify-between gap-2 md:gap-4 relative z-10 pb-6 border-b border-gray-100">
+                        @foreach($chartData as $date => $data)
+                            @php
+                                $successHeight = $maxChartValue > 0 ? ($data['successful'] / $maxChartValue) * 100 : 0;
+                                $blockedHeight = $maxChartValue > 0 ? ($data['blocked'] / $maxChartValue) * 100 : 0;
+                            @endphp
+                            <div class="flex-1 flex flex-col items-center gap-3 h-full justify-end group/bar relative">
+                                <div class="w-full max-w-[40px] flex flex-col justify-end h-full bg-gray-50 rounded-t-md relative hover:bg-gray-100 transition-colors">
+                                    <div class="w-full bg-purple-500 rounded-t-sm transition-all duration-500 shadow-sm" style="height: {{ $blockedHeight }}%"></div>
+                                    <div class="w-full bg-emerald-500 transition-all duration-500 shadow-sm {{ $blockedHeight == 0 ? 'rounded-t-sm' : '' }}" style="height: {{ $successHeight }}%"></div>
+                                </div>
+                                <span class="text-[9px] font-bold text-gray-400 uppercase whitespace-nowrap">{{ $data['day_name'] }}</span>
+                                
+                                <!-- Tooltip -->
+                                <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg opacity-0 group-hover/bar:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-20 shadow-xl">
+                                    {{ number_format($data['total']) }} Events
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
-                    <!-- Legend mockup from screenshot -->
-                    <div class="absolute top-4 right-4 flex items-center gap-4">
-                        <div class="flex items-center gap-2"><span class="w-3 h-1 bg-emerald-500 rounded-full"></span> <span class="text-[9px] font-bold text-gray-500 uppercase">Successful</span></div>
-                        <div class="flex items-center gap-2"><span class="w-3 h-1 bg-purple-500 rounded-full"></span> <span class="text-[9px] font-bold text-gray-500 uppercase">Blocked</span></div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] absolute bottom-4 left-1/2 -translate-x-1/2">Temporal Node Distribution</p>
+                    
+                    <!-- Legend -->
+                    <div class="absolute top-4 right-6 flex items-center gap-4 z-20">
+                        <div class="flex items-center gap-2"><span class="w-3 h-1 bg-emerald-500 rounded-full shadow-sm"></span> <span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Successful</span></div>
+                        <div class="flex items-center gap-2"><span class="w-3 h-1 bg-purple-500 rounded-full shadow-sm"></span> <span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Blocked</span></div>
                     </div>
                 </div>
             </div>
@@ -212,29 +222,42 @@
             </div>
 
             <div class="p-8">
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    @forelse($performanceStats as $index => $stat)
                     <!-- Event Specific Card -->
-                    <div class="bg-[#d1e9e0]/40 rounded-xl border border-[#d1e9e0] p-6">
+                    <div class="bg-gray-50 rounded-xl border border-gray-100 p-6 hover:border-emerald-200 transition-colors">
                         <div class="flex items-center gap-2 mb-4">
-                             <div class="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-                             <span class="text-[10px] font-bold text-gray-900 uppercase tracking-widest">PAGEVIEW</span>
+                             <div class="w-1.5 h-1.5 {{ ['bg-emerald-500', 'bg-purple-500', 'bg-blue-500', 'bg-amber-500', 'bg-rose-500'][$index % 5] }} rounded-full"></div>
+                             <span class="text-[10px] font-bold text-gray-900 uppercase tracking-widest">{{ $stat->event_name }}</span>
                         </div>
-                        <p class="text-3xl font-black text-gray-900">0</p>
+                        <p class="text-3xl font-black text-gray-900">{{ number_format($stat->total) }}</p>
                     </div>
+                    @empty
+                    <div class="lg:col-span-4 bg-gray-50 rounded-xl border border-dashed border-gray-200 p-8 text-center">
+                        <p class="text-sm font-bold text-gray-500">No event data collected in the last 7 days.</p>
+                    </div>
+                    @endforelse
 
                     <!-- Performance Chart Mockup -->
-                    <div class="lg:col-span-4 bg-gray-50/30 rounded-2xl border border-gray-100 h-[300px] flex items-center justify-center">
-                         <div class="w-full h-full p-6 flex flex-col justify-between">
-                             <div class="flex-1 border-b border-gray-100 flex items-end gap-1 px-4">
-                                  <template x-for="i in 30">
-                                      <div class="flex-1 bg-emerald-200 rounded-t-sm" :style="'height: ' + Math.floor(Math.random() * 80) + '%'"></div>
-                                  </template>
+                    <div class="lg:col-span-4 bg-gray-50/30 rounded-2xl border border-gray-100 h-[300px] flex items-center justify-center relative overflow-hidden mt-4">
+                         <div class="w-full h-full p-6 flex flex-col justify-between relative z-10">
+                             <div class="flex-1 border-b border-gray-100 flex items-end gap-2 md:gap-4 px-2 md:px-4">
+                                  @foreach($chartData as $date => $data)
+                                      @php
+                                          $height = $maxChartValue > 0 ? ($data['total'] / $maxChartValue) * 100 : 0;
+                                          $height = max(5, $height); // Ensure tiny bars are visible
+                                      @endphp
+                                      <div class="flex-1 bg-emerald-200 rounded-t-md hover:bg-emerald-300 transition-colors relative group" style="height: {{ $height }}%">
+                                          <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] font-bold py-1.5 px-3 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-20 shadow-xl">
+                                              {{ number_format($data['total']) }} Events
+                                          </div>
+                                      </div>
+                                  @endforeach
                              </div>
-                             <div class="pt-4 flex justify-between text-[8px] font-bold text-gray-300 uppercase tracking-widest">
-                                 <span>Apr 23</span>
-                                 <span>Apr 25</span>
-                                 <span>Apr 27</span>
-                                 <span>Apr 30</span>
+                             <div class="pt-4 flex justify-between text-[8px] font-bold text-gray-400 uppercase tracking-widest">
+                                 @foreach($chartData as $date => $data)
+                                     <span class="flex-1 text-center truncate">{{ \Carbon\Carbon::parse($date)->format('M d') }}</span>
+                                 @endforeach
                              </div>
                          </div>
                     </div>

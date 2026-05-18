@@ -92,10 +92,43 @@ class ProjectController extends Controller
 
         $events = $query->limit(10)->get();
 
+        $chartData = collect();
+        $maxChartValue = 10;
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            
+            $dayTotal = Event::where('project_id', $project->id)
+                ->whereDate('event_time', $date)
+                ->count();
+                
+            $dayBlocked = Event::where('project_id', $project->id)
+                ->whereDate('event_time', $date)
+                ->where('source', 'blocked')
+                ->count();
+                
+            $chartData->put($date, [
+                'successful' => $dayTotal - $dayBlocked,
+                'blocked' => $dayBlocked,
+                'total' => $dayTotal,
+                'day_name' => now()->subDays($i)->format('D')
+            ]);
+            
+            if ($dayTotal > $maxChartValue) {
+                $maxChartValue = $dayTotal;
+            }
+        }
+
+        $performanceStats = Event::where('project_id', $project->id)
+            ->where('event_time', '>=', now()->subDays(7)->startOfDay())
+            ->selectRaw('event_name, count(*) as total')
+            ->groupBy('event_name')
+            ->orderByDesc('total')
+            ->get();
+
         return view('projects.show', compact(
             'project', 'totalEvents', 'accountTotalEvents', 'successfulEvents', 'failedEvents', 
             'pendingEvents', 'blockedEvents', 'duplicatedEvents', 'events', 
-            'liveStatus', 'statusText'
+            'liveStatus', 'statusText', 'chartData', 'maxChartValue', 'performanceStats'
         ));
     }
 
