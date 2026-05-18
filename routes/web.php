@@ -40,6 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/projects/{project}/setup', [ProjectController::class, 'setup'])->name('projects.setup');
     Route::post('/projects/{project}/verify-domain', [ProjectController::class, 'verifyDomain'])->name('projects.verify_domain');
     Route::post('/projects/{project}/destinations', [ProjectController::class, 'updateDestinations'])->name('projects.destinations.update');
+    Route::post('/projects/{project}/test-connection', [ProjectController::class, 'testConnection'])->name('projects.test-connection');
     Route::get('/projects/{project}/events', [ProjectController::class, 'events'])->name('projects.events');
     Route::get('/projects/{project}/events-json', [ProjectController::class, 'eventsJson'])->name('projects.events.json');
     Route::get('/projects/{project}/events/{event}/logs', [ProjectController::class, 'deliveryLogs'])->name('projects.event.logs');

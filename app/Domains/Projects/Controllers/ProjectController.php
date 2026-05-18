@@ -417,4 +417,44 @@ class ProjectController extends Controller
 
         return response()->download($zipFile, 'eventrix.zip')->deleteFileAfterSend(true);
     }
+
+    public function testConnection(Request $request, Project $project, \App\Domains\EventForwarding\Platforms\Facebook\FacebookService $fbService)
+    {
+        if ($project->user_id !== auth()->id()) abort(403);
+
+        $request->validate([
+            'test_event_code' => 'required|string'
+        ]);
+
+        $dummyEvent = new Event([
+            'project_id' => $project->id,
+            'event_name' => 'PageView',
+            'event_time' => now(),
+            'event_id' => 'test_event_' . uniqid(),
+            'source' => 'api',
+            'user_data' => [
+                'client_ip_address' => $request->ip(),
+                'client_user_agent' => $request->userAgent(),
+                'page_url' => 'https://' . $project->custom_domain . '/test-connection'
+            ],
+            'custom_data' => [
+                'test_event_code' => $request->test_event_code
+            ]
+        ]);
+
+        $dummyEvent->save();
+
+        $destination = $project->destinations()->where('platform', 'fb_capi')->where('is_active', true)->first();
+
+        if ($destination) {
+            try {
+                $fbService->sendEvent($dummyEvent, $destination);
+                return response()->json(['status' => 'success', 'message' => 'Test event fired successfully!']);
+            } catch (\Exception $e) {
+                return response()->json(['status' => 'error', 'message' => 'Test event failed: ' . $e->getMessage()], 500);
+            }
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'No active Facebook CAPI destination found for this project.'], 400);
+    }
 }

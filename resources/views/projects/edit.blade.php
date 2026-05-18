@@ -201,9 +201,9 @@
                     <div class="space-y-6">
                         <div>
                             <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Test ID Code</label>
-                            <input type="text" class="block w-full border-gray-300 rounded-lg py-3 px-4 text-gray-900 font-bold text-xs" placeholder="TEST-0000" />
+                            <input type="text" id="testEventCode" class="block w-full border-gray-300 rounded-lg py-3 px-4 text-gray-900 font-bold text-xs" placeholder="TEST-0000" />
                         </div>
-                        <button class="w-full bg-gray-50 hover:bg-gray-100 text-gray-900 py-3 rounded-lg font-bold text-xs border border-gray-200 transition">
+                        <button id="runTestBtn" onclick="runConnectionTest()" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-900 py-3 rounded-lg font-bold text-xs border border-gray-200 transition">
                             Run Connection Test
                         </button>
                     </div>
@@ -212,4 +212,43 @@
 
         </div>
     </div>
+    
+    <script>
+    function runConnectionTest() {
+        let code = document.getElementById('testEventCode').value;
+        if(!code) {
+            alert('Please enter a Test ID Code from Facebook Events Manager');
+            return;
+        }
+
+        let btn = document.getElementById('runTestBtn');
+        let originalText = btn.innerText;
+        btn.innerText = "Sending Test Event...";
+        btn.disabled = true;
+
+        fetch("{{ route('projects.test-connection', $project->id) }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ test_event_code: code })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+            if(data.status === 'success') {
+                alert('Success! Check your Facebook Events Manager Real-time tab.');
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(err => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+            alert('Something went wrong. Please try again.');
+        });
+    }
+    </script>
 </x-app-layout>
