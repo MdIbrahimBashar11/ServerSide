@@ -136,10 +136,14 @@
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div class="p-6 md:p-8 border-b border-gray-100 flex items-center justify-between">
                 <h3 class="text-lg font-bold text-gray-900 tracking-tight">Analytics Overview</h3>
-                <select class="text-xs font-bold text-gray-500 border-gray-200 rounded-lg bg-gray-50 px-3 py-2 outline-none focus:ring-emerald-500 transition">
-                    <option>Last 7 Days</option>
-                    <option>Last 30 Days</option>
-                    <option>Today</option>
+                <select onchange="window.location.href='?period='+this.value" class="text-xs font-bold text-gray-500 border-gray-200 rounded-lg bg-gray-50 px-3 py-2 outline-none focus:ring-emerald-500 transition">
+                    <option value="today" {{ request('period') === 'today' ? 'selected' : '' }}>Today</option>
+                    <option value="last_7_days" {{ request('period', 'last_7_days') === 'last_7_days' ? 'selected' : '' }}>Last 7 Days</option>
+                    <option value="last_30_days" {{ request('period') === 'last_30_days' ? 'selected' : '' }}>Last 30 Days</option>
+                    <option value="current_month" {{ request('period') === 'current_month' ? 'selected' : '' }}>Current Month</option>
+                    <option value="previous_month" {{ request('period') === 'previous_month' ? 'selected' : '' }}>Previous Month</option>
+                    <option value="full_year" {{ request('period') === 'full_year' ? 'selected' : '' }}>Full Year</option>
+                    <option value="last_year" {{ request('period') === 'last_year' ? 'selected' : '' }}>Last Year</option>
                 </select>
             </div>
             
@@ -214,10 +218,16 @@
                     <p class="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-widest">Real-time health monitoring for your event clusters.</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <select class="text-xs font-bold text-gray-500 border-gray-200 rounded-lg bg-gray-50 px-3 py-2 outline-none focus:ring-emerald-500 transition">
-                        <option>Last 7 Days</option>
+                    <select onchange="window.location.href='?period='+this.value" class="text-xs font-bold text-gray-500 border-gray-200 rounded-lg bg-gray-50 px-3 py-2 outline-none focus:ring-emerald-500 transition">
+                        <option value="today" {{ request('period') === 'today' ? 'selected' : '' }}>Today</option>
+                        <option value="last_7_days" {{ request('period', 'last_7_days') === 'last_7_days' ? 'selected' : '' }}>Last 7 Days</option>
+                        <option value="last_30_days" {{ request('period') === 'last_30_days' ? 'selected' : '' }}>Last 30 Days</option>
+                        <option value="current_month" {{ request('period') === 'current_month' ? 'selected' : '' }}>Current Month</option>
+                        <option value="previous_month" {{ request('period') === 'previous_month' ? 'selected' : '' }}>Previous Month</option>
+                        <option value="full_year" {{ request('period') === 'full_year' ? 'selected' : '' }}>Full Year</option>
+                        <option value="last_year" {{ request('period') === 'last_year' ? 'selected' : '' }}>Last Year</option>
                     </select>
-                    <button class="px-5 py-2.5 bg-gray-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-black transition">All Events</button>
+                    <a href="{{ route('projects.events', $project->id) }}" class="px-5 py-2.5 bg-gray-900 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-black transition inline-block text-center flex items-center justify-center">All Events</a>
                 </div>
             </div>
 

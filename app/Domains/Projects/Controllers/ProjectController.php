@@ -92,25 +92,84 @@ class ProjectController extends Controller
 
         $events = $query->limit(10)->get();
 
+        $period = $request->get('period', 'last_7_days');
+        $startDate = now()->subDays(6)->startOfDay();
+        $endDate = now()->endOfDay();
+        $groupBy = 'day';
+        $points = 7;
+
+        switch ($period) {
+            case 'today':
+                $startDate = now()->startOfDay();
+                $points = 1;
+                break;
+            case 'current_month':
+                $startDate = now()->startOfMonth();
+                $points = now()->day;
+                break;
+            case 'previous_month':
+                $startDate = now()->subMonth()->startOfMonth();
+                $endDate = now()->subMonth()->endOfMonth();
+                $points = $startDate->diffInDays($endDate) + 1;
+                break;
+            case 'last_30_days':
+                $startDate = now()->subDays(29)->startOfDay();
+                $points = 30;
+                break;
+            case 'full_year':
+                $startDate = now()->startOfYear();
+                $groupBy = 'month';
+                $points = now()->month;
+                break;
+            case 'last_year':
+                $startDate = now()->subYear()->startOfYear();
+                $endDate = now()->subYear()->endOfYear();
+                $groupBy = 'month';
+                $points = 12;
+                break;
+            case 'last_7_days':
+            default:
+                $startDate = now()->subDays(6)->startOfDay();
+                $points = 7;
+                break;
+        }
+
         $chartData = collect();
         $maxChartValue = 10;
-        for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i)->format('Y-m-d');
-            
+        
+        for ($i = 0; $i < $points; $i++) {
+            if ($groupBy === 'month') {
+                $dateObj = (clone $startDate)->addMonths($i);
+                $label = $dateObj->format('Y-m');
+                $displayLabel = $dateObj->format('M');
+                $start = clone $dateObj->startOfMonth();
+                $end = clone $dateObj->endOfMonth();
+            } else {
+                $dateObj = (clone $startDate)->addDays($i);
+                $label = $dateObj->format('Y-m-d');
+                $displayLabel = $dateObj->format('M d');
+                $start = clone $dateObj->startOfDay();
+                $end = clone $dateObj->endOfDay();
+            }
+
+            if ($end->isAfter($endDate)) {
+                $end = clone $endDate;
+            }
+
             $dayTotal = Event::where('project_id', $project->id)
-                ->whereDate('event_time', $date)
+                ->whereBetween('event_time', [$start, $end])
                 ->count();
                 
             $dayBlocked = Event::where('project_id', $project->id)
-                ->whereDate('event_time', $date)
+                ->whereBetween('event_time', [$start, $end])
                 ->where('source', 'blocked')
                 ->count();
                 
-            $chartData->put($date, [
+            $chartData->put($label, [
                 'successful' => $dayTotal - $dayBlocked,
                 'blocked' => $dayBlocked,
                 'total' => $dayTotal,
-                'day_name' => now()->subDays($i)->format('D')
+                'day_name' => $displayLabel
             ]);
             
             if ($dayTotal > $maxChartValue) {
@@ -119,7 +178,7 @@ class ProjectController extends Controller
         }
 
         $performanceStats = Event::where('project_id', $project->id)
-            ->where('event_time', '>=', now()->subDays(7)->startOfDay())
+            ->whereBetween('event_time', [$startDate, $endDate])
             ->selectRaw('event_name, count(*) as total')
             ->groupBy('event_name')
             ->orderByDesc('total')
