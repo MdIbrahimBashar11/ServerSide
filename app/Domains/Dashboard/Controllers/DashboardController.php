@@ -28,12 +28,14 @@ class DashboardController extends Controller
             ]);
         }
 
+        $projectIds = $user->projects()->pluck('id');
+
         // 1. Total events (Account-wide)
-        $totalEventsCount = Event::where('user_id', $user->id)->count();
+        $totalEventsCount = Event::whereIn('project_id', $projectIds)->count();
 
         // 2. Total Purchase Value (Account-wide)
         $totalPurchaseValue = 0;
-        $purchases = Event::where('user_id', $user->id)->where('event_name', 'Purchase')->get();
+        $purchases = Event::whereIn('project_id', $projectIds)->where('event_name', 'Purchase')->get();
         foreach ($purchases as $p) {
             if (isset($p->custom_data['value'])) {
                 $totalPurchaseValue += (float)$p->custom_data['value'];
@@ -42,7 +44,7 @@ class DashboardController extends Controller
 
         // 3. Graph data: Events per day for last 7 days (Account-wide)
         $sevenDaysAgo = now()->subDays(6)->startOfDay();
-        $eventsByDay = Event::where('user_id', $user->id)
+        $eventsByDay = Event::whereIn('project_id', $projectIds)
             ->where('event_time', '>=', $sevenDaysAgo)
             ->select(DB::raw('DATE(event_time) as date'), DB::raw('count(*) as count'))
             ->groupBy('date')
