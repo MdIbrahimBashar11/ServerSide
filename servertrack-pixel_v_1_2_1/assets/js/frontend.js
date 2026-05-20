@@ -7,8 +7,8 @@ jQuery(document).ready(function($) {
     var lastAddToCartTime = 0;
 
     // Get custom triggers from settings
-    var addToCartTriggers = (typeof eventrixData !== 'undefined' && eventrixData.addToCartTriggers) ? eventrixData.addToCartTriggers : [];
-    var customEvents = (typeof eventrixData !== 'undefined' && eventrixData.customEvents) ? eventrixData.customEvents : [];
+    var addToCartTriggers = (typeof recordsyncData !== 'undefined' && recordsyncData.addToCartTriggers) ? recordsyncData.addToCartTriggers : [];
+    var customEvents = (typeof recordsyncData !== 'undefined' && recordsyncData.customEvents) ? recordsyncData.customEvents : [];
 
     // Build dynamic selectors from triggers
     function buildTriggerSelector(triggers) {
@@ -255,7 +255,7 @@ jQuery(document).ready(function($) {
         var now = Date.now();
         var timeDiff = now - lastAddToCartTime;
         if (lastAddToCartProduct === String(product_id) && timeDiff < 1000) {
-            console.log('EVENTRIX AddToCart: Duplicate prevented (same product within 1s)');
+            console.log('RecordSync AddToCart: Duplicate prevented (same product within 1s)');
             return;
         }
         lastAddToCartProduct = String(product_id);
@@ -346,9 +346,9 @@ jQuery(document).ready(function($) {
             item_name = $.trim($nameEl.text());
         }
 
-        console.log('EVENTRIX AddToCart detected:', product_id, 'Qty:', quantity, 'Price:', price);
+        console.log('RecordSync AddToCart detected:', product_id, 'Qty:', quantity, 'Price:', price);
 
-        var currency = (typeof eventrixData !== 'undefined' && eventrixData.currency) ? eventrixData.currency : 'USD';
+        var currency = (typeof recordsyncData !== 'undefined' && recordsyncData.currency) ? recordsyncData.currency : 'USD';
 
         if (window.st) {
             var data = {
@@ -380,10 +380,10 @@ jQuery(document).ready(function($) {
                 if (window.st) {
                     var customData = {
                         value: eventValue,
-                        currency: (typeof eventrixData !== 'undefined' && eventrixData.currency) ? eventrixData.currency : 'USD'
+                        currency: (typeof recordsyncData !== 'undefined' && recordsyncData.currency) ? recordsyncData.currency : 'USD'
                     };
                     window.st('track', eventName, customData, {});
-                    console.log('EVENTRIX Custom Event fired:', eventName, 'on URL:', currentPath);
+                    console.log('RecordSync Custom Event fired:', eventName, 'on URL:', currentPath);
                 }
             }
         });

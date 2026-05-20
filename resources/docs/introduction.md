@@ -1,6 +1,6 @@
-# Welcome to ServerTrack Docs
+# Welcome to RecordSync Docs
 
-ServerTrack is a premium First-Party Server-Side Tracking framework designed to effortlessly bypass iOS Safari privacy restrictions and browser AdBlockers without writing complex backend server rules.
+RecordSync is a premium First-Party Server-Side Tracking framework designed to effortlessly bypass iOS Safari privacy restrictions and browser AdBlockers without writing complex backend server rules.
 
 ## Why Server-Side Tracking?
 
@@ -8,7 +8,7 @@ Traditionally, when a user purchases an item on your e-commerce store, a client-
 
 However, privacy-focused browsers immediately block outgoing network requests to third parties. Thus, you lose up to 30% of your valid conversion data. 
 
-**ServerTrack circumvents this.**
+**RecordSync circumvents this.**
 
 By setting up a CNAME DNS record bridging your domain to our servers, you send tracking data from your frontend directly to your own subdomain:
 ```http

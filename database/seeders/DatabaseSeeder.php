@@ -72,9 +72,9 @@ class DatabaseSeeder extends Seeder
         // 3. Mount Tracking Server Deck (Project)
         $project = Project::factory()->create([
             'user_id' => $tenant->id,
-            'name' => 'Eventrix Master App',
-            'custom_domain' => 'trk.eventrix.io',
-            'website_url' => 'https://eventrix.io',
+            'name' => 'RecordSync Master App',
+            'custom_domain' => 'trk.recordsync.cam',
+            'website_url' => 'https://recordsync.cam',
             'platform' => 'laravel',
         ]);
 

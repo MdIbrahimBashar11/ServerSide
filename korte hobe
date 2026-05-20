@@ -5,7 +5,7 @@
 
 Type: CNAME
 Host/Name: track (বা আপনার পছন্দের যেকোনো নাম, যেমন: analytics বা api)
-Value/Target: mysite.recordsync.cam (অর্থাৎ আপনার মেইন সার্ভারের ইউআরএল)
+Value/Target: sdk.recordsync.cam (অর্থাৎ আপনার মেইন সার্ভারের ইউআরএল)
 TTL: Automatic বা 3600
 এর ফলে track.yourdomain.com এখন আপনার সার্ভারকে পয়েন্ট করবে।
 
@@ -39,14 +39,14 @@ html
 })();
 </script>
 ধাপ ৪: সার্ভার সাইড (Nginx) কনফিগারেশন
-আপনার লারাভেল সার্ভারে (যেখানে mysite.recordsync.cam হোস্ট করা), Nginx-কে বলতে হবে যেন সে এই নতুন ডোমেইনটির রিকোয়েস্টও গ্রহণ করে।
+আপনার লারাভেল সার্ভারে (যেখানে recordsync.cam হোস্ট করা), Nginx-কে বলতে হবে যেন সে এই নতুন ডোমেইনটির রিকোয়েস্টও গ্রহণ করে।
 
 আপনার Nginx কনফিগারেশন ফাইলে (/etc/nginx/sites-available/recordsync) server_name লাইনে আপনার ডোমেইনটি যোগ করতে হবে:
 
 nginx
 server {
     listen 80;
-    server_name mysite.recordsync.cam track.yourdomain.com; # এখানে আপনার ডোমেইনটি যোগ করুন
+    server_name recordsync.cam track.yourdomain.com; # এখানে আপনার ডোমেইনটি যোগ করুন
     ...
 }
 এরপর sudo nginx -t এবং sudo systemctl restart nginx দিন।

@@ -1,4 +1,4 @@
-# JavaScript Tracking Guide for Eventrix & RecordSync
+# JavaScript Tracking Guide for RecordSync
 
 This guide documents the JavaScript methods for implementing client-side tracking using the `X-Tracking-Id` header to point directly to your customized server.
 

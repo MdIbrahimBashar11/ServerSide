@@ -101,7 +101,7 @@ nano .env
 Update করুন:
 
 ```
-APP_URL=http://mysite.recordsync.cam
+APP_URL=http://recordsync.cam
 APP_ENV=production
 APP_DEBUG=false
 
@@ -141,7 +141,7 @@ sudo nano /etc/nginx/sites-available/recordsync
 ```nginx
 server {
     listen 80;
-    server_name mysite.recordsync.cam *.mysite.recordsync.cam;
+    server_name recordsync.cam *.recordsync.cam;
 
     root /var/www/recordsync/public;
     index index.php;
@@ -207,7 +207,7 @@ sudo supervisorctl start all
 Browser এ ওপেন করুন:
 
 ```
-http://mysite.recordsync.cam
+http://recordsync.cam
 ```
 
 ---

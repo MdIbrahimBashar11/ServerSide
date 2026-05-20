@@ -1,12 +1,12 @@
 # System Architecture & Setup Guide
 
-Welcome to the **Eventrix Infrastructure**. This document provides a deep dive into how our server-side tracking engine operates, the benefits of this architecture, and how to optimize your setup for maximum data reclamation.
+Welcome to the **RecordSync Infrastructure**. This document provides a deep dive into how our server-side tracking engine operates, the benefits of this architecture, and how to optimize your setup for maximum data reclamation.
 
 ---
 
 ## 🚀 How It Works
 
-Eventrix operates as a high-performance **First-Party Proxy Layer**. Instead of your website sending data directly to third-party domains (like `facebook.com`), it sends data to your own domain (e.g., `track.yourdomain.com`).
+RecordSync operates as a high-performance **First-Party Proxy Layer**. Instead of your website sending data directly to third-party domains (like `facebook.com`), it sends data to your own domain (e.g., `track.yourdomain.com`).
 
 ### The Data Journey
 
@@ -20,10 +20,10 @@ Eventrix operates as a high-performance **First-Party Proxy Layer**. Instead of 
 ## 💎 Key Benefits
 
 ### 1. Bypass iOS & AdBlock Restrictions
-By using a first-party subdomain, Eventrix data streams are invisible to standard browser blockers. This typically results in a **20-35% increase** in attributed conversions.
+By using a first-party subdomain, RecordSync data streams are invisible to standard browser blockers. This typically results in a **20-35% increase** in attributed conversions.
 
 ### 2. Improved Page Speed
-Traditional tracking pixels bloat your page and increase execution time. Eventrix offloads the heavy lifting to our server cluster, keeping your frontend lightning fast.
+Traditional tracking pixels bloat your page and increase execution time. RecordSync offloads the heavy lifting to our server cluster, keeping your frontend lightning fast.
 
 ### 3. Data Sovereignty
 You control what data is sent to vendors. Our system acts as a firewall, ensuring you only share what is necessary for marketing optimization.
@@ -35,10 +35,10 @@ You control what data is sent to vendors. Our system acts as a firewall, ensurin
 ### CNAME Configuration
 To achieve "First-Party" status, you must point a CNAME record to our edge node:
 - **Host**: `track` (or your preferred prefix)
-- **Points to**: `relay.eventrix.app`
+- **Points to**: `sdk.recordsync.cam`
 
 ### Event Deduplication
-Eventrix automatically handles deduplication between browser-side pixels and server-side events using the `event_id` parameter. This ensures your dashboard metrics remain accurate without double-counting.
+RecordSync automatically handles deduplication between browser-side pixels and server-side events using the `event_id` parameter. This ensures your dashboard metrics remain accurate without double-counting.
 
 ### Real-time Logs
 Visit your **Project Dashboard** to see live delivery logs. Every event shows its status (Success/Failed) and the raw response from Meta or Google.
@@ -48,8 +48,8 @@ Visit your **Project Dashboard** to see live delivery logs. Every event shows it
 ## 📈 Optimization Tips
 
 -   **Enable Advanced Matching**: Provide email or phone numbers in the event payload for higher match rates.
--   **Server-Side Only**: For maximum privacy, you can disable browser pixels entirely and rely solely on the Eventrix stream.
--   **Multi-Destination**: One event sent to Eventrix can be split and sent to Meta, GA4, TikTok, and Snap simultaneously.
+-   **Server-Side Only**: For maximum privacy, you can disable browser pixels entirely and rely solely on the RecordSync stream.
+-   **Multi-Destination**: One event sent to RecordSync can be split and sent to Meta, GA4, TikTok, and Snap simultaneously.
 
 ---
 

@@ -111,7 +111,7 @@ class BillingController extends Controller
     public function downloadInvoice(Request $request, $invoiceId)
     {
         return $request->user()->downloadInvoice($invoiceId, [
-            'vendor' => 'ServerTrack Protocol',
+            'vendor' => 'RecordSync',
             'product' => 'Data Infrastructure Routing',
         ]);
     }

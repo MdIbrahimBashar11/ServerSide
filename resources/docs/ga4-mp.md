@@ -21,8 +21,8 @@ You will need:
 4. Click on **Measurement Protocol API secrets**.
 5. Create a new secret and copy the **Secret value**.
 
-### 2. Configure Eventrix
-1. Navigate to your **Project Settings** in the Eventrix Dashboard.
+### 2. Configure RecordSync
+1. Navigate to your **Project Settings** in the RecordSync Dashboard.
 2. Under the **Destinations** tab, find **Google Analytics 4**.
 3. Paste your **Measurement ID** and **API Secret**.
 4. Click **Save Configuration**.
@@ -32,7 +32,7 @@ You will need:
 ## 🚀 Key Features
 
 -   **Cross-Device Tracking**: Use `client_id` and `user_id` to stitch sessions together across devices.
--   **Server-Side Events**: Send `purchase`, `refund`, or custom events directly from Eventrix.
+-   **Server-Side Events**: Send `purchase`, `refund`, or custom events directly from RecordSync.
 -   **No Cookie Dependency**: Events are sent directly to Google's servers, bypassing ad-blockers and browser restrictions.
 
 ---

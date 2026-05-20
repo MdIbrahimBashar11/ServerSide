@@ -1,6 +1,6 @@
 # Installing the Tracking Payload
 
-To begin capturing events using your ServerTrack infrastructure, you need to execute a simple Tracking Script on the front-end of your website (e.g. WooCommerce, Shopify, or Custom Code).
+To begin capturing events using your RecordSync infrastructure, you need to execute a simple Tracking Script on the front-end of your website (e.g. WooCommerce, Shopify, or Custom Code).
 
 ## 1. Locate your credentials
 
@@ -34,7 +34,7 @@ const payload = {
     }
 };
 
-// Transmit to ServerTrack Edge
+// Transmit to RecordSync Edge
 fetch("YOUR_INGESTION_ENDPOINT_URL", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -29,13 +29,13 @@ class WebhookService
 
         $headers = [
             'Content-Type' => 'application/json',
-            'User-Agent' => 'ServerTrack-Edge-Node/1.0'
+            'User-Agent' => 'RecordSync-Edge-Node/1.0'
         ];
 
         if (!empty($destination->access_token)) {
             $headers['Authorization'] = 'Bearer ' . $destination->access_token;
             // Also supply a generic signature header for custom webhook implementations
-            $headers['X-ServerTrack-Signature'] = hash_hmac('sha256', json_encode($payload), $destination->access_token);
+            $headers['X-RecordSync-Signature'] = hash_hmac('sha256', json_encode($payload), $destination->access_token);
         }
 
         $response = Http::withHeaders($headers)

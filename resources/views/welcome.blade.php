@@ -1,6 +1,6 @@
 @extends('layouts.landing')
 
-@section('title', 'Eventrix — Professional Server-Side Tracking')
+@section('title', 'RecordSync — Professional Server-Side Tracking')
 
 @section('content')
     <!-- Hero Section -->
@@ -150,7 +150,7 @@
     <section class="py-24 bg-gray-50" id="benefits">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16">
-                <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-widest mb-4">Why Eventrix</span>
+                <span class="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-widest mb-4">Why RecordSync</span>
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Maximize Your ROI</h2>
                 <p class="text-gray-600 text-lg">Outperform your competitors by fixing broken attribution models.</p>
             </div>
@@ -236,7 +236,7 @@
                 e.preventDefault();
                 const name = document.getElementById('contact-name').value;
                 const message = document.getElementById('contact-message').value;
-                const text = `Hello Eventrix! My name is ${encodeURIComponent(name)}. ${encodeURIComponent(message)}`;
+                const text = `Hello RecordSync! My name is ${encodeURIComponent(name)}. ${encodeURIComponent(message)}`;
                 window.open(`https://wa.me/8801713728112?text=${text}`, '_blank');
             }
         </script>

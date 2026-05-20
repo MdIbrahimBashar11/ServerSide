@@ -11,7 +11,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>
                         </div>
-                        <span class="text-xl font-bold font-outfit tracking-tight text-gray-900 group-hover:text-emerald-600 transition-colors">EVENTRIX</span>
+                        <span class="text-xl font-bold font-outfit tracking-tight text-gray-900 group-hover:text-emerald-600 transition-colors">RecordSync</span>
                     </a>
                 </div>
 

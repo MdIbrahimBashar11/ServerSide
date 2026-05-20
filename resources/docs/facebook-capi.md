@@ -22,8 +22,8 @@ Before you begin, you will need:
 4. Scroll down to the **Conversions API** section.
 5. Click **Generate access token** and copy it.
 
-### 2. Configure Eventrix
-1. Navigate to your **Project Settings** in the Eventrix Dashboard.
+### 2. Configure RecordSync
+1. Navigate to your **Project Settings** in the RecordSync Dashboard.
 2. Under the **Destinations** tab, find **Facebook CAPI**.
 3. Paste your **Pixel ID** and **Access Token**.
 4. Click **Save Configuration**.
@@ -35,12 +35,12 @@ Before you begin, you will need:
 To verify that events are being sent correctly:
 1. Use the **Test Events** tool in Facebook Events Manager.
 2. Copy your **Test Event Code** (e.g., `TEST12345`).
-3. Paste this code into the **Test Mode** field in your Eventrix project settings.
+3. Paste this code into the **Test Mode** field in your RecordSync project settings.
 4. Trigger an event on your website and check the "Test Events" tab in Facebook.
 
 ---
 
 ## 💡 Best Practices
 
--   **Deduplication**: Eventrix automatically sends an `event_id` with every event. Ensure your browser-side pixel also sends the same `event_id` to prevent double-counting.
+-   **Deduplication**: RecordSync automatically sends an `event_id` with every event. Ensure your browser-side pixel also sends the same `event_id` to prevent double-counting.
 -   **Advanced Matching**: Provide as much customer information as possible (hashed email, phone number) to increase the Match Quality score.

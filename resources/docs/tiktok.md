@@ -23,8 +23,8 @@ You will need:
 5. Go to the **Settings** tab.
 6. Scroll to **Events API** and click **Generate Access Token**.
 
-### 2. Configure Eventrix
-1. Navigate to your **Project Settings** in the Eventrix Dashboard.
+### 2. Configure RecordSync
+1. Navigate to your **Project Settings** in the RecordSync Dashboard.
 2. Under the **Destinations** tab, find **TikTok Events API**.
 3. Paste your **Pixel ID** and **Access Token**.
 4. Click **Save Configuration**.

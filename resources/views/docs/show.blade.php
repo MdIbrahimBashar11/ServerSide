@@ -1,6 +1,6 @@
 @extends('layouts.landing')
 
-@section('title', ($page === 'introduction' ? 'Documentation' : ucwords(str_replace('-', ' ', $page))) . ' — Eventrix')
+@section('title', ($page === 'introduction' ? 'Documentation' : ucwords(str_replace('-', ' ', $page))) . ' — RecordSync')
 
 @push('styles')
     <style>
@@ -96,7 +96,7 @@
 
                 <div class="mt-20 pt-10 border-t border-gray-100 flex justify-between items-center text-sm font-medium text-gray-500">
                     <span>Last updated: April 2026</span>
-                    <a href="mailto:support@eventrix.app" class="hover:text-emerald-600 transition">Report an issue</a>
+                    <a href="mailto:support@recordsync.cam" class="hover:text-emerald-600 transition">Report an issue</a>
                 </div>
             </div>
         </main>

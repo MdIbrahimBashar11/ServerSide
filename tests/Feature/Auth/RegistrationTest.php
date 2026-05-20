@@ -11,6 +11,7 @@ class RegistrationTest extends TestCase
 
     public function test_registration_screen_can_be_rendered(): void
     {
+        $this->seed();
         $response = $this->get('/register');
 
         $response->assertStatus(200);
@@ -18,11 +19,15 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
+        $this->seed();
+        $plan = \App\Models\SubscriptionPlan::first();
+
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'plan_id' => $plan->id,
         ]);
 
         $this->assertAuthenticated();

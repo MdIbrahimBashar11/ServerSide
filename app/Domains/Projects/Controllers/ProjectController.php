@@ -208,7 +208,7 @@ class ProjectController extends Controller
         $headers = [
             'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
             'Content-type'        => 'text/csv',
-            'Content-Disposition' => 'attachment; filename=eventrix_export_' . date('Y-m-d') . '.csv',
+            'Content-Disposition' => 'attachment; filename=recordsync_export_' . date('Y-m-d') . '.csv',
             'Expires'             => '0',
             'Pragma'              => 'public'
         ];
@@ -375,7 +375,7 @@ class ProjectController extends Controller
             return back()->with('error', 'WordPress plugin template source missing. Please contact engineering support.');
         }
 
-        $zipFile = tempnam(sys_get_temp_dir(), 'eventrix') . '.zip';
+        $zipFile = tempnam(sys_get_temp_dir(), 'recordsync') . '.zip';
         $zip = new \ZipArchive();
 
         if ($zip->open($zipFile, \ZipArchive::CREATE) === true) {
@@ -389,7 +389,7 @@ class ProjectController extends Controller
                 $relativePath = substr($filePath, strlen($templatePath) + 1);
                 
                 // Normalize backslashes to forward slashes for ZIP paths
-                $zipPath = 'eventrix/' . str_replace('\\', '/', $relativePath);
+                $zipPath = 'recordsync/' . str_replace('\\', '/', $relativePath);
 
                 if ($file->isDir()) {
                     $zip->addEmptyDir($zipPath);
@@ -397,7 +397,7 @@ class ProjectController extends Controller
                     $filename = $file->getFilename();
                     
                     // Pre-fill tracking ID, custom tracking URL, and favicon dynamically
-                    if ($filename === 'eventrix-pixel.php') {
+                    if ($filename === 'recordsync-pixel.php') {
                         $content = file_get_contents($filePath);
                         $content = str_replace(
                             array('%%TRACKING_ID%%', '%%TRACKING_URL%%', '%%FAVICON_URL%%'),
@@ -415,7 +415,7 @@ class ProjectController extends Controller
             return back()->with('error', 'Unable to generate plugin zip package.');
         }
 
-        return response()->download($zipFile, 'eventrix.zip')->deleteFileAfterSend(true);
+        return response()->download($zipFile, 'recordsync.zip')->deleteFileAfterSend(true);
     }
 
     public function testConnection(Request $request, Project $project, \App\Domains\EventForwarding\Platforms\Facebook\FacebookService $fbService)

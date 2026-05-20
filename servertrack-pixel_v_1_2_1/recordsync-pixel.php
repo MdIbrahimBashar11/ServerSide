@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: EVENTRIX - Conversion API & Pixel
- * Description: The complete server side tracking solution. Automatically generates DataLayer events for WooCommerce and connects to EVENTRIX.
+ * Plugin Name: RecordSync - Conversion API & Pixel
+ * Description: The complete server side tracking solution. Automatically generates DataLayer events for WooCommerce and connects to RecordSync.
  * Version: 1.2.1
  * Author: RecordSync
  * Author URI: https://recordsync.cam
  * License: GPL2
- * Text Domain: eventrix-pixel
+ * Text Domain: recordsync-pixel
  * Requires PHP: 7.4
  */
 
@@ -14,27 +14,27 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-if (!defined('EVENTRIX_VERSION')) {
-    define('EVENTRIX_VERSION', '1.2.1');
+if (!defined('RECORDSYNC_VERSION')) {
+    define('RECORDSYNC_VERSION', '1.2.1');
 }
 
 /**
  * Add custom links (Docs, Support)
  */
-add_filter( 'plugin_row_meta', 'eventrix_add_row_meta_links', 10, 2 );
+add_filter( 'plugin_row_meta', 'recordsync_add_row_meta_links', 10, 2 );
 
-function eventrix_add_row_meta_links( $links, $file ) {
+function recordsync_add_row_meta_links( $links, $file ) {
     if ( plugin_basename( __FILE__ ) === $file ) {
         $row_meta = array(
-            'docs'    => '<a href="https://mysite.recordsync.cam/docs" target="_blank" aria-label="View Documentation">Documentation</a>',
-            'support' => '<a href="https://mysite.recordsync.cam/tickets" target="_blank" aria-label="Contact Support">Support</a>',
+            'docs'    => '<a href="https://recordsync.cam/docs" target="_blank" aria-label="View Documentation">Documentation</a>',
+            'support' => '<a href="https://recordsync.cam/tickets" target="_blank" aria-label="Contact Support">Support</a>',
         );
         return array_merge( $links, $row_meta );
     }
     return $links;
 }
 
-class Eventrix_Plugin {
+class RecordSync_Plugin {
 
     public function __construct() {
         // Activation hooks
@@ -54,20 +54,20 @@ class Eventrix_Plugin {
     }
 
     public function activate() {
-        if (get_option('eventrix_mode') === false) {
-            update_option('eventrix_mode', 'datalayer');
+        if (get_option('recordsync_mode') === false) {
+            update_option('recordsync_mode', 'datalayer');
         }
-        if (get_option('eventrix_tracking_url') === false) {
-            update_option('eventrix_tracking_url', '%%TRACKING_URL%%');
+        if (get_option('recordsync_tracking_url') === false) {
+            update_option('recordsync_tracking_url', '%%TRACKING_URL%%');
         }
-        if (get_option('eventrix_tracking_id') === false) {
-            update_option('eventrix_tracking_id', '%%TRACKING_ID%%');
+        if (get_option('recordsync_tracking_id') === false) {
+            update_option('recordsync_tracking_id', '%%TRACKING_ID%%');
         }
-        if (get_option('eventrix_excluded_urls') === false) {
-            update_option('eventrix_excluded_urls', '');
+        if (get_option('recordsync_excluded_urls') === false) {
+            update_option('recordsync_excluded_urls', '');
         }
         // Default AddToCart triggers
-        if (get_option('eventrix_addtocart_triggers') === false) {
+        if (get_option('recordsync_addtocart_triggers') === false) {
             $default_triggers = array(
                 array('value' => 'ajax_add_to_cart', 'type' => 'class'),
                 array('value' => 'add_to_cart_button', 'type' => 'class'),
@@ -75,11 +75,11 @@ class Eventrix_Plugin {
                 array('value' => 'add-to-cart', 'type' => 'name'),
                 array('value' => 'addtocart', 'type' => 'id')
             );
-            update_option('eventrix_addtocart_triggers', $default_triggers);
+            update_option('recordsync_addtocart_triggers', $default_triggers);
         }
         // Default custom events (empty)
-        if (get_option('eventrix_custom_events') === false) {
-            update_option('eventrix_custom_events', array());
+        if (get_option('recordsync_custom_events') === false) {
+            update_option('recordsync_custom_events', array());
         }
     }
 
@@ -88,7 +88,7 @@ class Eventrix_Plugin {
     }
 
     public function plugin_action_links($links) {
-        $settings_link = '<a href="' . esc_url(admin_url('options-general.php?page=eventrix-settings')) . '">' . esc_html__('Settings', 'eventrix-pixel') . '</a>';
+        $settings_link = '<a href="' . esc_url(admin_url('options-general.php?page=recordsync-settings')) . '">' . esc_html__('Settings', 'recordsync-pixel') . '</a>';
         array_unshift($links, $settings_link);
         return $links;
     }
@@ -96,16 +96,16 @@ class Eventrix_Plugin {
     // --- ADMIN ---
 
     public function create_menu() {
-        add_options_page('EVENTRIX', 'EVENTRIX', 'manage_options', 'eventrix-settings', array($this, 'settings_page_html'));
+        add_options_page('RecordSync', 'RecordSync', 'manage_options', 'recordsync-settings', array($this, 'settings_page_html'));
     }
 
     public function register_settings() {
-        register_setting('eventrix_group', 'eventrix_tracking_id', array('sanitize_callback' => 'sanitize_text_field'));
-        register_setting('eventrix_group', 'eventrix_mode', array('sanitize_callback' => array($this, 'sanitize_mode')));
-        register_setting('eventrix_group', 'eventrix_tracking_url', array('sanitize_callback' => array($this, 'sanitize_tracking_url')));
-        register_setting('eventrix_group', 'eventrix_excluded_urls', array('sanitize_callback' => array($this, 'sanitize_excluded_urls')));
-        register_setting('eventrix_group', 'eventrix_addtocart_triggers', array('sanitize_callback' => array($this, 'sanitize_addtocart_triggers')));
-        register_setting('eventrix_group', 'eventrix_custom_events', array('sanitize_callback' => array($this, 'sanitize_custom_events')));
+        register_setting('recordsync_group', 'recordsync_tracking_id', array('sanitize_callback' => 'sanitize_text_field'));
+        register_setting('recordsync_group', 'recordsync_mode', array('sanitize_callback' => array($this, 'sanitize_mode')));
+        register_setting('recordsync_group', 'recordsync_tracking_url', array('sanitize_callback' => array($this, 'sanitize_tracking_url')));
+        register_setting('recordsync_group', 'recordsync_excluded_urls', array('sanitize_callback' => array($this, 'sanitize_excluded_urls')));
+        register_setting('recordsync_group', 'recordsync_addtocart_triggers', array('sanitize_callback' => array($this, 'sanitize_addtocart_triggers')));
+        register_setting('recordsync_group', 'recordsync_custom_events', array('sanitize_callback' => array($this, 'sanitize_custom_events')));
     }
 
     public function sanitize_mode($input) {
@@ -134,7 +134,7 @@ class Eventrix_Plugin {
     }
 
     public function is_url_excluded() {
-        $excluded_urls = get_option('eventrix_excluded_urls', '');
+        $excluded_urls = get_option('recordsync_excluded_urls', '');
         if (empty($excluded_urls)) {
             return false;
         }
@@ -218,83 +218,83 @@ class Eventrix_Plugin {
     }
 
     public function admin_scripts($hook) {
-        if ($hook !== 'settings_page_eventrix-settings') {
+        if ($hook !== 'settings_page_recordsync-settings') {
             return;
         }
         wp_enqueue_style(
-            'eventrix-admin', 
+            'recordsync-admin', 
             plugins_url('assets/css/admin.css', __FILE__), 
             array(), 
-            EVENTRIX_VERSION
+            RECORDSYNC_VERSION
         );
         wp_enqueue_script(
-            'eventrix-admin',
+            'recordsync-admin',
             plugins_url('assets/js/admin.js', __FILE__),
             array('jquery'),
-            EVENTRIX_VERSION,
+            RECORDSYNC_VERSION,
             true
         );
     }
 
     public function settings_page_html() {
         if (!current_user_can('manage_options')) {
-            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'eventrix-pixel'));
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'recordsync-pixel'));
         }
         ?>
         <div class="wrap st-wrapper">
             <div class="st-header">
                 <div class="st-logo">
-                    <img src="%%FAVICON_URL%%" alt="EVENTRIX" style="height: 32px; width: 32px; border-radius: 4px;">
-                    <span>EVENTRIX</span>
+                    <img src="%%FAVICON_URL%%" alt="RecordSync" style="height: 32px; width: 32px; border-radius: 4px;">
+                    <span>RecordSync</span>
                 </div>
-                <div class="st-status-badge">Version <?php echo esc_html( EVENTRIX_VERSION ); ?></div>
+                <div class="st-status-badge">Version <?php echo esc_html( RECORDSYNC_VERSION ); ?></div>
             </div>
 
             <form method="post" action="options.php">
-                <?php settings_fields('eventrix_group'); ?>
+                <?php settings_fields('recordsync_group'); ?>
                 <div class="st-grid">
                     <div class="st-column-main">
                         <div class="st-card">
-                            <h2><?php echo esc_html__('Configuration', 'eventrix-pixel'); ?></h2>
+                            <h2><?php echo esc_html__('Configuration', 'recordsync-pixel'); ?></h2>
                             <div class="st-form-group">
-                                <label class="st-label" for="eventrix_tracking_id"><?php echo esc_html__('Tracking ID', 'eventrix-pixel'); ?></label>
-                                <input type="text" id="eventrix_tracking_id" class="st-input" name="eventrix_tracking_id" value="<?php echo esc_attr(get_option('eventrix_tracking_id')); ?>" placeholder="trk_..." />
-                                <p class="st-help"><?php echo esc_html__('Your specific first-party Project tracking identifier.', 'eventrix-pixel'); ?></p>
+                                <label class="st-label" for="recordsync_tracking_id"><?php echo esc_html__('Tracking ID', 'recordsync-pixel'); ?></label>
+                                <input type="text" id="recordsync_tracking_id" class="st-input" name="recordsync_tracking_id" value="<?php echo esc_attr(get_option('recordsync_tracking_id')); ?>" placeholder="trk_..." />
+                                <p class="st-help"><?php echo esc_html__('Your specific first-party Project tracking identifier.', 'recordsync-pixel'); ?></p>
                             </div>
                             <div class="st-form-group">
-                                <label class="st-label" for="eventrix_mode"><?php echo esc_html__('Tracking Mode', 'eventrix-pixel'); ?></label>
-                                <select id="eventrix_mode" class="st-select" name="eventrix_mode">
-                                    <option value="datalayer" <?php selected(get_option('eventrix_mode'), 'datalayer'); ?>><?php echo esc_html__('Full Plug-and-Play (Recommended)', 'eventrix-pixel'); ?></option>
-                                    <option value="websocket" <?php selected(get_option('eventrix_mode'), 'websocket'); ?>><?php echo esc_html__('Advanced Blocker Bypass Mode', 'eventrix-pixel'); ?></option>
+                                <label class="st-label" for="recordsync_mode"><?php echo esc_html__('Tracking Mode', 'recordsync-pixel'); ?></label>
+                                <select id="recordsync_mode" class="st-select" name="recordsync_mode">
+                                    <option value="datalayer" <?php selected(get_option('recordsync_mode'), 'datalayer'); ?>><?php echo esc_html__('Full Plug-and-Play (Recommended)', 'recordsync-pixel'); ?></option>
+                                    <option value="websocket" <?php selected(get_option('recordsync_mode'), 'websocket'); ?>><?php echo esc_html__('Advanced Blocker Bypass Mode', 'recordsync-pixel'); ?></option>
                                 </select>
-                                <p class="st-help"><?php echo esc_html__('Recommended mode handles full event compilation and first-party cloaking automatically.', 'eventrix-pixel'); ?></p>
+                                <p class="st-help"><?php echo esc_html__('Recommended mode handles full event compilation and first-party cloaking automatically.', 'recordsync-pixel'); ?></p>
                             </div>
                             <div class="st-form-group">
-                                <label class="st-label" for="eventrix_tracking_url"><?php echo esc_html__('Custom Tracking URL', 'eventrix-pixel'); ?></label>
-                                <input type="text" id="eventrix_tracking_url" class="st-input" name="eventrix_tracking_url" value="<?php echo esc_attr(get_option('eventrix_tracking_url', '%%TRACKING_URL%%')); ?>" placeholder="https://track.yourdomain.com/api/track-event" />
+                                <label class="st-label" for="recordsync_tracking_url"><?php echo esc_html__('Custom Tracking URL', 'recordsync-pixel'); ?></label>
+                                <input type="text" id="recordsync_tracking_url" class="st-input" name="recordsync_tracking_url" value="<?php echo esc_attr(get_option('recordsync_tracking_url', '%%TRACKING_URL%%')); ?>" placeholder="https://track.yourdomain.com/api/track-event" />
                                 <div class="st-alert">
-                                    <strong><?php echo esc_html__('First-Party CNAME Cloaking', 'eventrix-pixel'); ?></strong>
-                                    <p style="margin:5px 0 10px;"><?php echo esc_html__('To bypass ad blockers completely, set up a custom subdomain in your DNS pointing to recordsync.cam.', 'eventrix-pixel'); ?></p>
-                                    <a href="https://mysite.recordsync.cam/docs" target="_blank" style="text-decoration:none; color:#013D29; font-weight:600;">
-                                        <?php echo esc_html__('Read the CNAME Setup Guide &rarr;', 'eventrix-pixel'); ?>
+                                    <strong><?php echo esc_html__('First-Party CNAME Cloaking', 'recordsync-pixel'); ?></strong>
+                                    <p style="margin:5px 0 10px;"><?php echo esc_html__('To bypass ad blockers completely, set up a custom subdomain in your DNS pointing to recordsync.cam.', 'recordsync-pixel'); ?></p>
+                                    <a href="https://recordsync.cam/docs" target="_blank" style="text-decoration:none; color:#013D29; font-weight:600;">
+                                        <?php echo esc_html__('Read the CNAME Setup Guide &rarr;', 'recordsync-pixel'); ?>
                                     </a>
                                 </div>
                             </div>
                             <div class="st-form-group">
-                                <label class="st-label" for="eventrix_excluded_urls"><?php echo esc_html__('Excluded URLs', 'eventrix-pixel'); ?></label>
-                                <textarea id="eventrix_excluded_urls" class="st-textarea" name="eventrix_excluded_urls" rows="6" placeholder="/checkout&#10;/cart&#10;/my-account"><?php echo esc_textarea(get_option('eventrix_excluded_urls', '')); ?></textarea>
-                                <p class="st-help"><?php echo esc_html__('Enter one URL or path per line. Tracking will be disabled on matching pages. Examples: /checkout, /cart, /privacy-policy, /terms', 'eventrix-pixel'); ?></p>
+                                <label class="st-label" for="recordsync_excluded_urls"><?php echo esc_html__('Excluded URLs', 'recordsync-pixel'); ?></label>
+                                <textarea id="recordsync_excluded_urls" class="st-textarea" name="recordsync_excluded_urls" rows="6" placeholder="/checkout&#10;/cart&#10;/my-account"><?php echo esc_textarea(get_option('recordsync_excluded_urls', '')); ?></textarea>
+                                <p class="st-help"><?php echo esc_html__('Enter one URL or path per line. Tracking will be disabled on matching pages. Examples: /checkout, /cart, /privacy-policy, /terms', 'recordsync-pixel'); ?></p>
                             </div>
                         </div>
 
                         <!-- AddToCart Triggers Repeater -->
                         <div class="st-card" style="margin-top: 30px;">
-                            <h2><?php echo esc_html__('Add To Cart - Triggers', 'eventrix-pixel'); ?></h2>
-                            <p class="st-help" style="margin-bottom: 15px;"><?php echo esc_html__('Configure custom selectors to detect AddToCart buttons. Any match will trigger the event.', 'eventrix-pixel'); ?></p>
+                            <h2><?php echo esc_html__('Add To Cart - Triggers', 'recordsync-pixel'); ?></h2>
+                            <p class="st-help" style="margin-bottom: 15px;"><?php echo esc_html__('Configure custom selectors to detect AddToCart buttons. Any match will trigger the event.', 'recordsync-pixel'); ?></p>
                             
                             <div id="addtocart-triggers-repeater">
                                 <?php 
-                                $triggers = get_option('eventrix_addtocart_triggers', array());
+                                $triggers = get_option('recordsync_addtocart_triggers', array());
                                 if (empty($triggers)) {
                                     $triggers = array(
                                         array('value' => 'ajax_add_to_cart', 'type' => 'class'),
@@ -309,11 +309,11 @@ class Eventrix_Plugin {
                                     <div class="st-repeater-row" data-index="<?php echo esc_attr($index); ?>">
                                         <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center;">
                                             <input type="text" 
-                                                   name="eventrix_addtocart_triggers[<?php echo esc_attr($index); ?>][value]" 
+                                                   name="recordsync_addtocart_triggers[<?php echo esc_attr($index); ?>][value]" 
                                                    value="<?php echo esc_attr($trigger['value'] ?? ''); ?>" 
                                                    placeholder="ajax_add_to_cart" 
                                                    class="st-input" />
-                                            <select name="eventrix_addtocart_triggers[<?php echo esc_attr($index); ?>][type]" class="st-select">
+                                            <select name="recordsync_addtocart_triggers[<?php echo esc_attr($index); ?>][type]" class="st-select">
                                                 <option value="class" <?php selected($trigger['type'] ?? '', 'class'); ?>>class</option>
                                                 <option value="name" <?php selected($trigger['type'] ?? '', 'name'); ?>>name</option>
                                                 <option value="id" <?php selected($trigger['type'] ?? '', 'id'); ?>>id</option>
@@ -332,28 +332,28 @@ class Eventrix_Plugin {
 
                         <!-- Custom Events Repeater -->
                         <div class="st-card" style="margin-top: 30px;">
-                            <h2><?php echo esc_html__('Custom Events', 'eventrix-pixel'); ?></h2>
-                            <p class="st-help" style="margin-bottom: 15px;"><?php echo esc_html__('Track custom events on specific URL patterns.', 'eventrix-pixel'); ?></p>
+                            <h2><?php echo esc_html__('Custom Events', 'recordsync-pixel'); ?></h2>
+                            <p class="st-help" style="margin-bottom: 15px;"><?php echo esc_html__('Track custom events on specific URL patterns.', 'recordsync-pixel'); ?></p>
                             
                             <div id="custom-events-repeater">
                                 <?php 
-                                $custom_events = get_option('eventrix_custom_events', array());
+                                $custom_events = get_option('recordsync_custom_events', array());
                                 foreach ($custom_events as $index => $event) {
                                     ?>
                                     <div class="st-repeater-row" data-index="<?php echo esc_attr($index); ?>">
                                         <div style="display: grid; grid-template-columns: 2fr 2fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center;">
                                             <input type="text" 
-                                                   name="eventrix_custom_events[<?php echo esc_attr($index); ?>][custom_url]" 
+                                                   name="recordsync_custom_events[<?php echo esc_attr($index); ?>][custom_url]" 
                                                    value="<?php echo esc_attr($event['custom_url'] ?? ''); ?>" 
                                                    placeholder="/cart" 
                                                    class="st-input" />
                                             <input type="text" 
-                                                   name="eventrix_custom_events[<?php echo esc_attr($index); ?>][custom_event_name]" 
+                                                   name="recordsync_custom_events[<?php echo esc_attr($index); ?>][custom_event_name]" 
                                                    value="<?php echo esc_attr($event['custom_event_name'] ?? ''); ?>" 
                                                    placeholder="cart" 
                                                    class="st-input" />
                                             <input type="number" 
-                                                   name="eventrix_custom_events[<?php echo esc_attr($index); ?>][value]" 
+                                                   name="recordsync_custom_events[<?php echo esc_attr($index); ?>][value]" 
                                                    value="<?php echo esc_attr($event['value'] ?? 0); ?>" 
                                                    placeholder="0" 
                                                    step="0.01"
@@ -369,17 +369,17 @@ class Eventrix_Plugin {
                         </div>
 
                         <div style="margin-top: 30px;">
-                            <button type="submit" class="st-btn-primary"><?php echo esc_html__('Save Settings', 'eventrix-pixel'); ?></button>
+                            <button type="submit" class="st-btn-primary"><?php echo esc_html__('Save Settings', 'recordsync-pixel'); ?></button>
                         </div>
                     </div>
                     <div class="st-column-sidebar">
                         <div class="st-card">
-                            <h2><?php echo esc_html__('Quick Links', 'eventrix-pixel'); ?></h2>
-                            <a href="https://mysite.recordsync.cam/docs" target="_blank" class="st-sidebar-link">
-                                <span class="dashicons dashicons-book" style="margin-right:8px;"></span> <?php echo esc_html__('Documentation', 'eventrix-pixel'); ?>
+                            <h2><?php echo esc_html__('Quick Links', 'recordsync-pixel'); ?></h2>
+                            <a href="https://recordsync.cam/docs" target="_blank" class="st-sidebar-link">
+                                <span class="dashicons dashicons-book" style="margin-right:8px;"></span> <?php echo esc_html__('Documentation', 'recordsync-pixel'); ?>
                             </a>
-                            <a href="https://mysite.recordsync.cam/tickets" target="_blank" class="st-sidebar-link">
-                                <span class="dashicons dashicons-sos" style="margin-right:8px;"></span> <?php echo esc_html__('Contact Support', 'eventrix-pixel'); ?>
+                            <a href="https://recordsync.cam/tickets" target="_blank" class="st-sidebar-link">
+                                <span class="dashicons dashicons-sos" style="margin-right:8px;"></span> <?php echo esc_html__('Contact Support', 'recordsync-pixel'); ?>
                             </a>
                         </div>
                     </div>
@@ -396,8 +396,8 @@ class Eventrix_Plugin {
             return;
         }
 
-        $tracking_id = get_option('eventrix_tracking_id');
-        $tracking_url = get_option('eventrix_tracking_url');
+        $tracking_id = get_option('recordsync_tracking_id');
+        $tracking_url = get_option('recordsync_tracking_url');
         if (!$tracking_id || !$tracking_url) return;
 
         // Force HTTPS if page is loaded over SSL to prevent Mixed Content blocking
@@ -409,8 +409,8 @@ class Eventrix_Plugin {
         $sdk_url = str_replace(array('/api/track-event', '/api/events'), '/js/track.js', $tracking_url);
 
         // Register and load compatibility wrapper and edge transmitter
-        wp_register_script('eventrix-init', '', array(), EVENTRIX_VERSION, false);
-        wp_enqueue_script('eventrix-init');
+        wp_register_script('recordsync-init', '', array(), RECORDSYNC_VERSION, false);
+        wp_enqueue_script('recordsync-init');
 
         $inline_script = sprintf(
             "window.ServerTrackEnv = { tracking_id: %s, endpoint: %s }; " .
@@ -427,45 +427,45 @@ class Eventrix_Plugin {
             wp_json_encode($tracking_id),
             wp_json_encode($tracking_url)
         );
-        wp_add_inline_script('eventrix-init', $inline_script);
+        wp_add_inline_script('recordsync-init', $inline_script);
 
         // Enqueue edge SDK asynchronously
-        wp_enqueue_script('eventrix-sdk', $sdk_url, array('eventrix-init'), EVENTRIX_VERSION, false);
+        wp_enqueue_script('recordsync-sdk', $sdk_url, array('recordsync-init'), RECORDSYNC_VERSION, false);
         add_filter('script_loader_tag', array($this, 'add_async_attribute'), 10, 2);
 
         if (class_exists('WooCommerce')) {
             wp_enqueue_script(
-                'eventrix-frontend', 
+                'recordsync-frontend', 
                 plugins_url('assets/js/frontend.js', __FILE__), 
-                array('jquery', 'eventrix-init'), 
-                EVENTRIX_VERSION, 
+                array('jquery', 'recordsync-init'), 
+                RECORDSYNC_VERSION, 
                 true
             );
 
             $data_for_js = array(
                 'currency' => get_woocommerce_currency(),
                 'cartEvents' => $this->get_cart_events_from_session(),
-                'addToCartTriggers' => get_option('eventrix_addtocart_triggers', array()),
-                'customEvents' => get_option('eventrix_custom_events', array())
+                'addToCartTriggers' => get_option('recordsync_addtocart_triggers', array()),
+                'customEvents' => get_option('recordsync_custom_events', array())
             );
 
-            wp_localize_script('eventrix-frontend', 'eventrixData', $data_for_js);
+            wp_localize_script('recordsync-frontend', 'recordsyncData', $data_for_js);
 
             $this->inject_dynamic_events();
         }
     }
 
     public function add_async_attribute($tag, $handle) {
-        if ('eventrix-sdk' !== $handle) {
+        if ('recordsync-sdk' !== $handle) {
             return $tag;
         }
         return str_replace(' src', ' async src', $tag);
     }
 
     private function get_cart_events_from_session() {
-        $cart_events = get_transient('eventrix_cart_events');
+        $cart_events = get_transient('recordsync_cart_events');
         if ($cart_events) {
-            delete_transient('eventrix_cart_events');
+            delete_transient('recordsync_cart_events');
             return $cart_events;
         }
         return array();
@@ -588,7 +588,7 @@ class Eventrix_Plugin {
         $st_user_data_js = wp_json_encode($st_user_data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         
         $inline_script = "(function() { if (window.st) { window.st('track', $event_name_js, $st_data_js, $st_user_data_js); } else { setTimeout(function() { if (window.st) window.st('track', $event_name_js, $st_data_js, $st_user_data_js); }, 200); } })();";
-        wp_add_inline_script('eventrix-init', $inline_script);
+        wp_add_inline_script('recordsync-init', $inline_script);
     }
 
     private function convert_event_name_to_st($woo_event) {
@@ -729,4 +729,4 @@ class Eventrix_Plugin {
     }
 }
 
-new Eventrix_Plugin();
+new RecordSync_Plugin();

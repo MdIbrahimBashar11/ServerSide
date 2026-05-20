@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <title>@yield('title', 'Eventrix — Professional Server-Side Tracking')</title>
+    <title>@yield('title', 'RecordSync — Professional Server-Side Tracking')</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
@@ -49,7 +49,7 @@
                 <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-600/20 group-hover:scale-110 transition-transform">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
-                <span class="text-xl font-bold text-gray-900 tracking-tight">Eventrix</span>
+                <span class="text-xl font-bold text-gray-900 tracking-tight">RecordSync</span>
             </a>
             
             <!-- Main Navigation Links -->
@@ -91,10 +91,10 @@
                 <div class="w-6 h-6 bg-emerald-600 rounded flex items-center justify-center">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
-                <span class="text-lg font-bold text-gray-900 tracking-tight">Eventrix</span>
+                <span class="text-lg font-bold text-gray-900 tracking-tight">RecordSync</span>
             </div>
             <div class="flex flex-col md:items-end gap-2">
-                <p class="text-gray-400 text-sm font-medium">&copy; {{ date('Y') }} Eventrix Tracking Solutions. All rights reserved.</p>
+                <p class="text-gray-400 text-sm font-medium">&copy; {{ date('Y') }} RecordSync Tracking Solutions. All rights reserved.</p>
                 <div class="flex gap-6">
                     <a href="#" class="text-xs font-bold text-gray-400 hover:text-emerald-600 transition uppercase tracking-widest">Privacy</a>
                     <a href="#" class="text-xs font-bold text-gray-400 hover:text-emerald-600 transition uppercase tracking-widest">Terms</a>
